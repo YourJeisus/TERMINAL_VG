@@ -1,0 +1,532 @@
+{
+  "version": "2.8",
+  "children": [
+    {
+      "type": "frame",
+      "id": "AoNlD",
+      "x": 850,
+      "y": 0,
+      "name": "Ticket Vorobyovy Gory",
+      "width": 302,
+      "fill": "#FFFFFF",
+      "layout": "vertical",
+      "padding": [
+        16,
+        20,
+        20,
+        20
+      ],
+      "children": [
+        {
+          "type": "frame",
+          "id": "dVF0C",
+          "name": "logoSection",
+          "width": "fill_container",
+          "gap": 4,
+          "padding": [
+            0,
+            0,
+            12,
+            0
+          ],
+          "alignItems": "center",
+          "children": [
+            {
+              "type": "frame",
+              "id": "euNZF",
+              "name": "logoText",
+              "layout": "vertical",
+              "children": [
+                {
+                  "type": "text",
+                  "id": "rtMqY",
+                  "name": "logoLine1",
+                  "fill": "#000000",
+                  "content": "ВОРОБЬЁВЫ",
+                  "lineHeight": 0.95,
+                  "fontFamily": "Inter",
+                  "fontSize": 24,
+                  "fontWeight": "900"
+                },
+                {
+                  "type": "text",
+                  "id": "ZGwRL",
+                  "name": "logoLine2",
+                  "fill": "#000000",
+                  "content": "ГОРЫ",
+                  "lineHeight": 0.95,
+                  "fontFamily": "Inter",
+                  "fontSize": 24,
+                  "fontWeight": "900"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "C5Yer",
+              "name": "logoSep",
+              "width": 2,
+              "height": 40,
+              "fill": "#000000"
+            },
+            {
+              "type": "text",
+              "id": "ZM9sc",
+              "name": "logoSub",
+              "fill": "#000000",
+              "textGrowth": "fixed-width",
+              "width": 80,
+              "content": "СПОРТИВНО-\nТУРИСТИЧЕСКИЙ\nКОМПЛЕКС",
+              "lineHeight": 1.15,
+              "fontFamily": "Inter",
+              "fontSize": 7,
+              "fontWeight": "700",
+              "letterSpacing": 0.3
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "A4i2q",
+          "name": "line1",
+          "width": "fill_container",
+          "height": 1,
+          "fill": "#000000"
+        },
+        {
+          "type": "frame",
+          "id": "q5nth",
+          "name": "titleWrap",
+          "width": "fill_container",
+          "layout": "vertical",
+          "gap": 8,
+          "padding": [
+            16,
+            0,
+            12,
+            0
+          ],
+          "alignItems": "center",
+          "children": [
+            {
+              "type": "text",
+              "id": "FbO2B",
+              "name": "titleText",
+              "fill": "#000000",
+              "content": "Билет",
+              "textAlign": "center",
+              "fontFamily": "Inter",
+              "fontSize": 22,
+              "fontWeight": "700"
+            },
+            {
+              "type": "text",
+              "id": "mKw4q",
+              "name": "ticketType",
+              "fill": "#000000",
+              "textGrowth": "fixed-width",
+              "width": "fill_container",
+              "content": "[Детский] Туда-Обратно + Парк альпак",
+              "textAlign": "center",
+              "fontFamily": "Inter",
+              "fontSize": 10,
+              "fontWeight": "600"
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "xHbi5",
+          "name": "infoTable",
+          "width": "fill_container",
+          "layout": "vertical",
+          "gap": 4,
+          "padding": [
+            12,
+            0
+          ],
+          "children": [
+            {
+              "type": "frame",
+              "id": "TxRY5",
+              "name": "r1",
+              "width": "fill_container",
+              "justifyContent": "space_between",
+              "children": [
+                {
+                  "type": "text",
+                  "id": "W4kfz",
+                  "name": "r1l",
+                  "fill": "#000000",
+                  "content": "Стоимость",
+                  "fontFamily": "Inter",
+                  "fontSize": 10,
+                  "fontWeight": "normal"
+                },
+                {
+                  "type": "text",
+                  "id": "dctQl",
+                  "name": "r1v",
+                  "fill": "#000000",
+                  "content": "1400",
+                  "fontFamily": "Inter",
+                  "fontSize": 10,
+                  "fontWeight": "600"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "d5usL",
+              "name": "r2",
+              "width": "fill_container",
+              "justifyContent": "space_between",
+              "children": [
+                {
+                  "type": "text",
+                  "id": "KZXEI",
+                  "name": "r2l",
+                  "fill": "#000000",
+                  "content": "Кассир",
+                  "fontFamily": "Inter",
+                  "fontSize": 10,
+                  "fontWeight": "normal"
+                },
+                {
+                  "type": "text",
+                  "id": "50dtv",
+                  "name": "r2v",
+                  "fill": "#000000",
+                  "content": "Ермолова Наталья",
+                  "fontFamily": "Inter",
+                  "fontSize": 10,
+                  "fontWeight": "600"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "ce8ic",
+              "name": "r3",
+              "width": "fill_container",
+              "justifyContent": "space_between",
+              "children": [
+                {
+                  "type": "text",
+                  "id": "zhqKv",
+                  "name": "r3l",
+                  "fill": "#000000",
+                  "content": "Дата",
+                  "fontFamily": "Inter",
+                  "fontSize": 10,
+                  "fontWeight": "normal"
+                },
+                {
+                  "type": "text",
+                  "id": "xI1jq",
+                  "name": "r3v",
+                  "fill": "#000000",
+                  "content": "23.02.2026 11:32",
+                  "fontFamily": "Inter",
+                  "fontSize": 10,
+                  "fontWeight": "600"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "FfAZZ",
+              "name": "r4",
+              "width": "fill_container",
+              "justifyContent": "space_between",
+              "children": [
+                {
+                  "type": "text",
+                  "id": "rJcFu",
+                  "name": "r4l",
+                  "fill": "#000000",
+                  "content": "Номер",
+                  "fontFamily": "Inter",
+                  "fontSize": 10,
+                  "fontWeight": "normal"
+                },
+                {
+                  "type": "text",
+                  "id": "SBsED",
+                  "name": "r4v",
+                  "fill": "#000000",
+                  "content": "472923",
+                  "fontFamily": "Inter",
+                  "fontSize": 10,
+                  "fontWeight": "600"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "vtoKN",
+          "name": "line2",
+          "width": "fill_container",
+          "height": 1,
+          "fill": "#CCCCCC"
+        },
+        {
+          "type": "frame",
+          "id": "4adbF",
+          "name": "promoWrap",
+          "width": "fill_container",
+          "layout": "vertical",
+          "gap": 10,
+          "padding": [
+            12,
+            0
+          ],
+          "children": [
+            {
+              "type": "text",
+              "id": "I7xkx",
+              "name": "promoText",
+              "fill": "#000000",
+              "textGrowth": "fixed-width",
+              "width": "fill_container",
+              "content": "Все услуги комплекса \"Воробьевы\nГоры\" доступны в интернет-магазине:",
+              "lineHeight": 1.4,
+              "fontFamily": "Inter",
+              "fontSize": 9,
+              "fontWeight": "normal"
+            },
+            {
+              "type": "frame",
+              "id": "Jj27n",
+              "name": "contactsRow",
+              "width": "fill_container",
+              "gap": 10,
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "lvhcJ",
+                  "name": "qrSmall",
+                  "width": 80,
+                  "height": 80,
+                  "fill": "#EEEEEE",
+                  "stroke": {
+                    "thickness": 1,
+                    "fill": "#CCCCCC"
+                  },
+                  "layout": "vertical",
+                  "justifyContent": "center",
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "mZRYU",
+                      "name": "qrSmallText",
+                      "fill": "#AAAAAA",
+                      "content": "QR",
+                      "fontFamily": "Inter",
+                      "fontSize": 12,
+                      "fontWeight": "700"
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "YY8fX",
+                  "name": "contactsList",
+                  "width": "fill_container",
+                  "layout": "vertical",
+                  "gap": 4,
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "6W7jZ",
+                      "name": "c1",
+                      "width": "fill_container",
+                      "justifyContent": "space_between",
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "1w7zM",
+                          "name": "c1l",
+                          "fill": "#666666",
+                          "content": "Сайт:",
+                          "fontFamily": "Inter",
+                          "fontSize": 8,
+                          "fontWeight": "normal"
+                        },
+                        {
+                          "type": "text",
+                          "id": "X2PJK",
+                          "name": "c1v",
+                          "fill": "#000000",
+                          "content": "stkvg.ru",
+                          "fontFamily": "Inter",
+                          "fontSize": 8,
+                          "fontWeight": "600"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "etFbq",
+                      "name": "c2",
+                      "width": "fill_container",
+                      "justifyContent": "space_between",
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "1lR85",
+                          "name": "c2l",
+                          "fill": "#666666",
+                          "content": "Телефон:",
+                          "fontFamily": "Inter",
+                          "fontSize": 8,
+                          "fontWeight": "normal"
+                        },
+                        {
+                          "type": "text",
+                          "id": "UE6TX",
+                          "name": "c2v",
+                          "fill": "#000000",
+                          "content": "+7(495) 123-22-43",
+                          "fontFamily": "Inter",
+                          "fontSize": 8,
+                          "fontWeight": "600"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "ctnF8",
+                      "name": "c3",
+                      "width": "fill_container",
+                      "justifyContent": "space_between",
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "ZxGfo",
+                          "name": "c3l",
+                          "fill": "#666666",
+                          "content": "Telegram:",
+                          "fontFamily": "Inter",
+                          "fontSize": 8,
+                          "fontWeight": "normal"
+                        },
+                        {
+                          "type": "text",
+                          "id": "atLZC",
+                          "name": "c3v",
+                          "fill": "#000000",
+                          "content": "@stkvg",
+                          "fontFamily": "Inter",
+                          "fontSize": 8,
+                          "fontWeight": "600"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "cMbRO",
+                      "name": "c4",
+                      "width": "fill_container",
+                      "justifyContent": "space_between",
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "TXzkN",
+                          "name": "c4l",
+                          "fill": "#666666",
+                          "content": "Email:",
+                          "fontFamily": "Inter",
+                          "fontSize": 8,
+                          "fontWeight": "normal"
+                        },
+                        {
+                          "type": "text",
+                          "id": "FlRWJ",
+                          "name": "c4v",
+                          "fill": "#000000",
+                          "content": "info@stkvg.ru",
+                          "fontFamily": "Inter",
+                          "fontSize": 8,
+                          "fontWeight": "600"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "mEoM1",
+          "name": "line3",
+          "width": "fill_container",
+          "height": 1,
+          "fill": "#CCCCCC"
+        },
+        {
+          "type": "frame",
+          "id": "McweV",
+          "name": "scanSection",
+          "width": "fill_container",
+          "layout": "vertical",
+          "gap": 14,
+          "padding": [
+            14,
+            0,
+            8,
+            0
+          ],
+          "alignItems": "center",
+          "children": [
+            {
+              "type": "text",
+              "id": "zg5Ro",
+              "name": "scanText",
+              "fill": "#000000ff",
+              "textGrowth": "fixed-width",
+              "width": "fill_container",
+              "content": "Для прохода - отсканируйте этот код:",
+              "textAlign": "center",
+              "fontFamily": "Inter",
+              "fontSize": 10,
+              "fontWeight": "600"
+            },
+            {
+              "type": "frame",
+              "id": "b7bF1",
+              "name": "qrBig",
+              "width": 220,
+              "height": 220,
+              "fill": "#F0F0F0",
+              "stroke": {
+                "thickness": 1,
+                "fill": "#CCCCCC"
+              },
+              "layout": "vertical",
+              "justifyContent": "center",
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "text",
+                  "id": "S9ynq",
+                  "name": "qrBigText",
+                  "fill": "#AAAAAA",
+                  "content": "QR CODE",
+                  "fontFamily": "Inter",
+                  "fontSize": 16,
+                  "fontWeight": "700"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
