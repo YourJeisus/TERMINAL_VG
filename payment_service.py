@@ -40,17 +40,21 @@ OP_REFUND     = '3'
 OP_SETTLEMENT = '7'
 OP_TEST       = '26'
 
-# INPAS field IDs
-F_OPERATION = '25'   # Operation type
-F_AMOUNT    = '04'   # Amount in kopecks
-F_TIMESTAMP = '21'   # YYYYMMDDHHmmss
-F_RRN       = '37'   # Retrieval Reference Number
-F_AUTHCODE  = '38'   # Authorization code
-F_RESPONSE  = '39'   # Response code (00=OK)
-F_CARD      = '34'   # Masked card number
-F_TERMINAL  = '27'   # Terminal ID
+# INPAS field IDs (confirmed from live testing)
+F_AMOUNT    = '00'   # Amount in kopecks
+F_CURRENCY  = '04'   # Currency code (643 = RUB)
+F_CARD      = '10'   # Masked card number
+F_AUTHCODE  = '13'   # Authorization code
 F_MESSAGE   = '19'   # Status message text
-F_RECEIPT   = '90'   # Receipt / additional data
+F_TIMESTAMP = '21'   # YYYYMMDDHHmmss
+F_OPERATION = '25'   # Operation type
+F_TERMINAL  = '27'   # Terminal ID
+F_MERCHANT  = '28'   # Merchant ID
+F_RESPONSE  = '39'   # Response code (1=OK)
+F_RRN       = '52'   # Retrieval Reference Number
+F_RECEIPT   = '90'   # Receipt text
+
+TERMINAL_ID = '10364869'
 
 
 # ---------------------------------------------------------------------------
@@ -60,9 +64,11 @@ F_RECEIPT   = '90'   # Receipt / additional data
 def build_xml(operation, amount=None, rrn=None, timeout_sec=120):
     """Build INPAS field-based XML request."""
     root = ET.Element('request')
-    ET.SubElement(root, 'field', id=F_OPERATION).text = str(operation)
     if amount is not None:
         ET.SubElement(root, 'field', id=F_AMOUNT).text = str(int(amount))
+    ET.SubElement(root, 'field', id=F_CURRENCY).text = '643'
+    ET.SubElement(root, 'field', id=F_OPERATION).text = str(operation)
+    ET.SubElement(root, 'field', id=F_TERMINAL).text = TERMINAL_ID
     if rrn:
         ET.SubElement(root, 'field', id=F_RRN).text = str(rrn)
     ET.SubElement(root, 'timeout').text = str(timeout_sec)
