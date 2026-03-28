@@ -8,17 +8,38 @@ timeout /t 2 /nobreak >nul
 
 echo [2/8] Updating from GitHub...
 cd /d "%~dp0"
+set "REPO_ZIP=%TEMP%\terminal_vg_update.zip"
+set "REPO_EXTRACT=%TEMP%\terminal_vg_update"
 git --version >nul 2>&1
-if %errorlevel% neq 0 (
-    echo       Git not found. Skipping update.
-) else (
+if %errorlevel% equ 0 (
     git pull origin master 2>&1
     if %errorlevel% equ 0 (
-        echo       Updated successfully.
+        echo       Updated via git.
     ) else (
-        echo       Update failed. Continuing with current version.
+        echo       Git pull failed. Trying ZIP download...
+        goto :zip_update
     )
+    goto :update_done
 )
+:zip_update
+echo       Downloading latest version...
+powershell -Command "[Net.ServicePointManager]::SecurityProtocol=[Net.SecurityProtocolType]::Tls12; try { Invoke-WebRequest -Uri 'https://github.com/YourJeisus/TERMINAL_VG/archive/refs/heads/master.zip' -OutFile $env:REPO_ZIP -UseBasicParsing -TimeoutSec 30; Write-Host 'OK' } catch { Write-Host 'FAIL'; exit 1 }"
+if %errorlevel% neq 0 (
+    echo       Download failed. Continuing with current version.
+    goto :update_done
+)
+echo       Extracting...
+if exist "%REPO_EXTRACT%" rmdir /s /q "%REPO_EXTRACT%" >nul 2>&1
+powershell -Command "Expand-Archive -Path $env:REPO_ZIP -DestinationPath $env:REPO_EXTRACT -Force"
+if exist "%REPO_EXTRACT%\TERMINAL_VG-master\" (
+    xcopy /s /y /q "%REPO_EXTRACT%\TERMINAL_VG-master\*" "%~dp0" >nul 2>&1
+    echo       Updated successfully.
+) else (
+    echo       Extract failed. Continuing with current version.
+)
+if exist "%REPO_ZIP%" del /q "%REPO_ZIP%" >nul 2>&1
+if exist "%REPO_EXTRACT%" rmdir /s /q "%REPO_EXTRACT%" >nul 2>&1
+:update_done
 
 echo [3/8] Checking Python...
 python --version >nul 2>&1
