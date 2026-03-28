@@ -29,14 +29,20 @@ REG ADD "HKCU\SOFTWARE\Policies\Google\Chrome" /v SilentPrintingEnabled /t REG_D
 REG ADD "HKLM\SOFTWARE\Policies\Google\Chrome" /v PrintPreviewUseSystemDefaultPrinter /t REG_DWORD /d 1 /f >nul 2>&1
 REG ADD "HKCU\SOFTWARE\Policies\Google\Chrome" /v PrintPreviewUseSystemDefaultPrinter /t REG_DWORD /d 1 /f >nul 2>&1
 
-echo [5/5] Starting print server and Chrome...
+echo [5/6] Starting print server (port 9999)...
 cd /d "%~dp0"
 start /b "" python server.py --print-only
+timeout /t 1 /nobreak >nul
+
+echo [6/6] Starting payment service (port 5050)...
+start /b "" python payment_service.py
 timeout /t 2 /nobreak >nul
 
 start "" "C:\Program Files\Google\Chrome\Application\chrome.exe" --user-data-dir="C:\TerminalVG" --kiosk --kiosk-printing --disable-session-crashed-bubble --noerrdialogs --disable-infobars --disable-features=TranslateUI --disable-background-mode --disable-pinch --overscroll-history-navigation=0 https://terminal-vg.vercel.app
 
 echo.
 echo === Terminal started ===
+echo Print server:   localhost:9999
+echo Payment service: localhost:5050 (PAX S300 via DualConnector)
 echo Exit kiosk: Alt+F4
 pause

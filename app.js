@@ -1,6 +1,104 @@
 // === Initialize Lucide icons ===
 lucide.createIcons();
 
+// === API Configuration ===
+var API_URL = '/api/categories'; // proxied via server.py to bypass CORS
+var TERMINAL_NAME = 'term1';
+var TERMINAL_CODE = 'XRHxAIKHdBoDRujltXnc8H9C5ZBAwm4S';
+
+// Map API category_id → screen key
+var CATEGORY_SCREEN_MAP = {
+  '1': 'tickets',    // Канатная дорога
+  '2': 'alpaka',     // Парк Альпак
+  '3': 'museum',     // Музей иллюзий
+  '4': 'skypark'     // Skypark
+};
+
+var loadedCategories = [];
+
+function loadCategories() {
+  var xhr = new XMLHttpRequest();
+  xhr.open('POST', API_URL, true);
+  xhr.setRequestHeader('Content-Type', 'application/json');
+  xhr.timeout = 10000;
+  xhr.onload = function() {
+    try {
+      var data = JSON.parse(xhr.responseText);
+      if (data.categories && data.categories.length > 0) {
+        loadedCategories = data.categories;
+        renderCategories(data.categories);
+        console.log('[API] Loaded ' + data.categories.length + ' categories');
+      }
+    } catch (e) {
+      console.error('[API] Parse error:', e);
+    }
+  };
+  xhr.onerror = function() { console.error('[API] Network error'); };
+  xhr.ontimeout = function() { console.error('[API] Timeout'); };
+  xhr.send(JSON.stringify({
+    terminal_name: TERMINAL_NAME,
+    terminal_code: TERMINAL_CODE
+  }));
+}
+
+function renderCategories(categories) {
+  categories.forEach(function(cat) {
+    var screenKey = CATEGORY_SCREEN_MAP[cat.category_id];
+    if (!screenKey) return;
+    var screenId = 'screen-' + screenKey;
+    var screen = document.getElementById(screenId);
+    if (!screen) return;
+
+    // Update title
+    var titleEl = screen.querySelector('.tkt-title');
+    if (titleEl && cat.category_name) titleEl.textContent = cat.category_name;
+
+    // Update description
+    var descEl = screen.querySelector('.tkt-description p');
+    if (descEl && cat.category_description) descEl.textContent = cat.category_description;
+
+    // Update carousel photo if provided
+    if (cat.category_photo) {
+      var track = screen.querySelector('.tkt-carousel-track');
+      if (track) {
+        var img = document.createElement('img');
+        img.src = cat.category_photo;
+        img.alt = cat.category_name;
+        img.className = 'tkt-carousel-slide';
+        track.appendChild(img);
+      }
+    }
+
+    // Render tariffs
+    if (cat.category_tariffs && cat.category_tariffs.length > 0) {
+      var rowsContainer = screen.querySelector('.tkt-rows');
+      if (!rowsContainer) return;
+      rowsContainer.innerHTML = '';
+
+      cat.category_tariffs.forEach(function(tariff) {
+        var row = document.createElement('div');
+        row.className = 'tkt-row';
+        row.dataset.price = tariff.price;
+        row.dataset.tariffId = tariff.id;
+        row.innerHTML =
+          '<span class="tkt-pill">' + tariff.name + '</span>' +
+          '<span class="tkt-price">' + formatPrice(parseInt(tariff.price)) + ' ₽</span>' +
+          '<div class="tkt-counter">' +
+            '<button class="tkt-counter-btn tkt-counter-btn--minus" onclick="changeQty(this, -1)">−</button>' +
+            '<span class="tkt-counter-val">0</span>' +
+            '<button class="tkt-counter-btn tkt-counter-btn--plus" onclick="changeQty(this, 1)">+</button>' +
+          '</div>';
+        rowsContainer.appendChild(row);
+      });
+    }
+  });
+
+  lucide.createIcons();
+}
+
+// Load categories on startup
+loadCategories();
+
 // === Navigation ===
 const screenMap = {
   'splash': 'screen-splash',
@@ -26,7 +124,7 @@ function navigateTo(screenName) {
   const target = document.getElementById(targetId);
   if (target) {
     target.classList.add('active');
-    target.querySelectorAll('.main-content, .topup-wrap, .tkt-card, .rent-content, .instructors-content')
+    target.querySelectorAll('.main-content, .topup-wrap, .tkt-scroll, .tkt-card, .rent-content, .instructors-content')
       .forEach(el => el.scrollTop = 0);
   }
 
@@ -192,6 +290,38 @@ function formatPrice(n) {
   return n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
 }
 
+// === Ticket Carousels ===
+document.querySelectorAll('[data-carousel]').forEach(function(carousel) {
+  var track = carousel.querySelector('.tkt-carousel-track');
+  var dotsWrap = carousel.querySelector('.tkt-carousel-dots');
+  var slides = carousel.querySelectorAll('.tkt-carousel-slide');
+  if (!track || !dotsWrap || slides.length === 0) return;
+
+  // Generate dots
+  slides.forEach(function(_, i) {
+    var dot = document.createElement('button');
+    dot.className = 'tkt-carousel-dot' + (i === 0 ? ' active' : '');
+    dot.onclick = function() {
+      slides[i].scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'start' });
+    };
+    dotsWrap.appendChild(dot);
+  });
+
+  // Hide dots if single slide
+  if (slides.length <= 1) dotsWrap.style.display = 'none';
+
+  // Track scroll position
+  var dots = dotsWrap.querySelectorAll('.tkt-carousel-dot');
+  track.addEventListener('scroll', function() {
+    var scrollLeft = track.scrollLeft;
+    var width = track.offsetWidth;
+    var idx = Math.round(scrollLeft / width);
+    dots.forEach(function(d, i) {
+      d.classList.toggle('active', i === idx);
+    });
+  });
+});
+
 // === Clock ===
 function updateClock() {
   const now = new Date();
@@ -204,17 +334,81 @@ setInterval(updateClock, 30000);
 
 // === Auto-return to splash after inactivity ===
 let inactivityTimer = null;
-const INACTIVITY_TIMEOUT = 120000; // 2 minutes
+let inactivityCountdownTimer = null;
+const INACTIVITY_TIMEOUT = 20000; // 20 seconds before warning
+const INACTIVITY_COUNTDOWN = 10;  // 10 second countdown in modal
 
 function resetInactivityTimer() {
   clearTimeout(inactivityTimer);
-  inactivityTimer = setTimeout(() => {
-    navigateTo('splash');
-  }, INACTIVITY_TIMEOUT);
+  clearInterval(inactivityCountdownTimer);
+  hideInactivityModal();
+  var splashEl = document.getElementById('screen-splash');
+  if (splashEl && splashEl.classList.contains('active')) return;
+  inactivityTimer = setTimeout(showInactivityModal, INACTIVITY_TIMEOUT);
 }
 
-document.addEventListener('click', resetInactivityTimer);
-document.addEventListener('touchstart', resetInactivityTimer);
+function showInactivityModal() {
+  var modal = document.getElementById('inactivity-modal');
+  var countEl = document.getElementById('inactivity-countdown');
+  if (!modal) return;
+  var remaining = INACTIVITY_COUNTDOWN;
+  if (countEl) countEl.textContent = remaining;
+  modal.classList.add('active');
+
+  clearInterval(inactivityCountdownTimer);
+  inactivityCountdownTimer = setInterval(function() {
+    remaining--;
+    if (countEl) countEl.textContent = remaining;
+    if (remaining <= 0) {
+      clearInterval(inactivityCountdownTimer);
+      hideInactivityModal();
+      clearInterval(countdownInterval);
+      clearTimeout(successTimer);
+      clearInterval(sbpCountdownInterval);
+      clearTimeout(sbpTimer);
+      navigateTo('splash');
+    }
+  }, 1000);
+}
+
+function hideInactivityModal() {
+  var modal = document.getElementById('inactivity-modal');
+  if (modal) modal.classList.remove('active');
+}
+
+function dismissInactivity() {
+  resetInactivityTimer();
+}
+
+function goToSplashNow() {
+  clearTimeout(inactivityTimer);
+  clearInterval(inactivityCountdownTimer);
+  hideInactivityModal();
+  clearInterval(countdownInterval);
+  clearTimeout(successTimer);
+  clearInterval(sbpCountdownInterval);
+  clearTimeout(sbpTimer);
+  navigateTo('splash');
+}
+
+document.addEventListener('click', function(e) {
+  var modal = document.getElementById('inactivity-modal');
+  if (modal && modal.classList.contains('active')) {
+    if (e.target.closest('.inactivity-btn')) return;
+    resetInactivityTimer();
+    return;
+  }
+  resetInactivityTimer();
+});
+document.addEventListener('touchstart', function(e) {
+  var modal = document.getElementById('inactivity-modal');
+  if (modal && modal.classList.contains('active')) {
+    if (e.target.closest('.inactivity-btn')) return;
+    resetInactivityTimer();
+    return;
+  }
+  resetInactivityTimer();
+});
 resetInactivityTimer();
 
 // === Payment Processing ===
@@ -225,6 +419,10 @@ let sbpCountdownInterval = null;
 let paymentSourceScreen = null; // 'tickets' or 'rental'
 let pendingCartItems = [];
 let pendingCartTotal = 0;
+let lastPaymentRRN = '';
+let lastPaymentAuthCode = '';
+let lastPaymentCardNumber = '';
+let paymentAbortController = null;
 
 // Collect selected items from any ticket screen
 function collectTicketItems(screenId) {
@@ -234,7 +432,8 @@ function collectTicketItems(screenId) {
     if (qty > 0) {
       const name = row.querySelector('.tkt-pill').textContent.trim();
       const price = parseInt(row.dataset.price);
-      items.push({ name: name, price: price, qty: qty });
+      const tariffId = row.dataset.tariffId || null;
+      items.push({ name: name, price: price, qty: qty, tariffId: tariffId });
     }
   });
   // Combo counter (only on tickets screen)
@@ -327,6 +526,7 @@ function processPayment() {
 
 // Back from payment method screen
 function goBackFromPayment() {
+  hidePaymentLoader();
   if (paymentSourceScreen) {
     navigateTo(paymentSourceScreen);
   } else {
@@ -334,13 +534,61 @@ function goBackFromPayment() {
   }
 }
 
-// Step 2a: Pay by card (simulated)
+function showPaymentLoader(text) {
+  var loader = document.getElementById('payment-loader');
+  var loaderText = loader ? loader.querySelector('.payment-loader-text') : null;
+  if (loaderText) loaderText.textContent = text || 'Обработка оплаты...';
+  if (loader) loader.classList.add('active');
+}
+
+function hidePaymentLoader() {
+  var loader = document.getElementById('payment-loader');
+  if (loader) loader.classList.remove('active');
+}
+
+// Step 2a: Pay by card (PAX S300 via INPAS DualConnector)
 function payByCard() {
-  showAlert('Приложите карту к терминалу...');
-  // Simulate card processing delay
-  setTimeout(function() {
-    completePayment('Банковская карта');
-  }, 2000);
+  var amountKopecks = pendingCartTotal * 100;
+  var orderId = 'VG-' + Date.now().toString(36).toUpperCase();
+
+  showPaymentLoader('Приложите карту к терминалу...');
+
+  // AbortController for 130s timeout (DC timeout is 120s)
+  paymentAbortController = new AbortController();
+  var timeoutId = setTimeout(function() {
+    paymentAbortController.abort();
+  }, 130000);
+
+  fetch('http://localhost:5050/api/pay', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    signal: paymentAbortController.signal,
+    body: JSON.stringify({ amount: amountKopecks, order_id: orderId })
+  })
+  .then(function(response) { return response.json(); })
+  .then(function(data) {
+    clearTimeout(timeoutId);
+    hidePaymentLoader();
+    if (data.success) {
+      lastPaymentRRN = data.rrn || '';
+      lastPaymentAuthCode = data.authorization_code || '';
+      lastPaymentCardNumber = data.card_number || '';
+      completePayment('Банковская карта');
+    } else {
+      var errorMsg = data.message || data.error || 'Оплата отклонена';
+      showAlert(errorMsg);
+    }
+  })
+  .catch(function(err) {
+    clearTimeout(timeoutId);
+    hidePaymentLoader();
+    if (err.name === 'AbortError') {
+      showAlert('Время ожидания оплаты истекло');
+    } else {
+      console.error('[PAY] Error:', err);
+      showAlert('Ошибка связи с терминалом оплаты');
+    }
+  });
 }
 
 // Step 2b: Pay by SBP — show QR code
@@ -395,7 +643,11 @@ function cancelSBP() {
 
 // Step 2c: Free payment — immediate ticket
 function payFree() {
-  completePayment('Без оплаты');
+  showPaymentLoader('Оформление билетов...');
+  setTimeout(function() {
+    hidePaymentLoader();
+    completePayment('Без оплаты');
+  }, 1500);
 }
 
 // Step 3: Complete payment — create individual tickets, show receipt modal
@@ -422,33 +674,41 @@ function completePayment(paymentMethod) {
     return;
   }
 
-  // Show success screen, print tickets first, then ask about email receipt
+  // Show success screen, print tickets, then ask about email receipt
   navigateTo('success');
-  printAllTickets();
-  showReceiptInline();
+
+  var printDone = false;
+  function onPrintFinished() {
+    if (printDone) return;
+    printDone = true;
+    hidePrintLoader();
+    showReceiptInline();
+  }
+
+  showPrintLoader();
+  printAllTickets(onPrintFinished);
+  // Safety: if printing hangs, proceed after 6 seconds
+  setTimeout(onPrintFinished, 6000);
 }
 
-// === Receipt (inline on success screen) ===
+// === Receipt (inline on success card) ===
 function showReceiptInline() {
-  var receipt = document.getElementById('success-receipt');
+  var question = document.getElementById('success-receipt-question');
   var buttons = document.getElementById('success-receipt-buttons');
   var emailForm = document.getElementById('success-receipt-email');
   var emailInput = document.getElementById('receipt-email-input');
-  var title = document.getElementById('success-receipt-title');
 
-  if (receipt) receipt.style.display = 'flex';
+  if (question) question.style.display = '';
   if (buttons) buttons.style.display = 'flex';
   if (emailForm) emailForm.style.display = 'none';
   if (emailInput) emailInput.value = '';
-  if (title) title.textContent = 'Нужен ли вам чек на email?';
 
   startSuccessCountdown();
   lucide.createIcons();
 }
 
 function receiptYes() {
-  document.getElementById('success-receipt-buttons').style.display = 'none';
-  document.getElementById('success-receipt-title').textContent = 'Введите email';
+  document.getElementById('success-receipt-question').style.display = 'none';
   document.getElementById('success-receipt-email').style.display = 'flex';
   document.getElementById('receipt-email-input').value = '';
   // Pause countdown while typing email
@@ -457,13 +717,12 @@ function receiptYes() {
 }
 
 function receiptNo() {
-  document.getElementById('success-receipt').style.display = 'none';
+  goToMainFromSuccess();
 }
 
 function receiptBackToButtons() {
   document.getElementById('success-receipt-email').style.display = 'none';
-  document.getElementById('success-receipt-title').textContent = 'Нужен ли вам чек на email?';
-  document.getElementById('success-receipt-buttons').style.display = 'flex';
+  document.getElementById('success-receipt-question').style.display = '';
   startSuccessCountdown();
 }
 
@@ -475,8 +734,7 @@ function receiptSendEmail() {
   }
   console.log('[EMAIL RECEIPT] ' + email, pendingTickets.map(function(t) { return t.number; }));
   showAlert('Чек отправлен на ' + email);
-  document.getElementById('success-receipt').style.display = 'none';
-  startSuccessCountdown();
+  goToMainFromSuccess();
 }
 
 function goToMainFromSuccess() {
@@ -486,19 +744,37 @@ function goToMainFromSuccess() {
 }
 
 // Print tickets one by one with delay between each
-function printAllTickets() {
-  if (pendingTickets.length === 0) return;
+function showPrintLoader() {
+  var loader = document.getElementById('print-loader');
+  var countEl = document.getElementById('print-loader-count');
+  if (countEl) countEl.textContent = '';
+  if (loader) loader.classList.add('active');
+}
+
+function hidePrintLoader() {
+  var loader = document.getElementById('print-loader');
+  if (loader) loader.classList.remove('active');
+}
+
+function printAllTickets(onAllDone) {
+  if (pendingTickets.length === 0) {
+    if (onAllDone) onAllDone();
+    return;
+  }
+
+  var total = pendingTickets.length;
+  var countEl = document.getElementById('print-loader-count');
 
   function printNext(index) {
-    if (index >= pendingTickets.length) {
-      // All done — clear print area
+    if (index >= total) {
       var area = document.getElementById('print-area');
       if (area) area.innerHTML = '';
+      if (onAllDone) onAllDone();
       return;
     }
+    if (countEl) countEl.textContent = (index + 1) + ' из ' + total;
     try {
       TicketService.printTicket(pendingTickets[index], function() {
-        // Callback fires after print completes (afterprint event)
         printNext(index + 1);
       });
     } catch (e) {
@@ -507,13 +783,12 @@ function printAllTickets() {
     }
   }
 
-  // Start printing after small delay
   setTimeout(function() { printNext(0); }, 500);
 }
 
-// Success countdown (starts after modal closes)
+// Success countdown
 function startSuccessCountdown() {
-  var remaining = 10;
+  var remaining = 15;
   var countdownEl = document.getElementById('success-countdown');
   if (countdownEl) countdownEl.textContent = remaining;
 
@@ -530,8 +805,8 @@ function startSuccessCountdown() {
 
   successTimer = setTimeout(function() {
     clearInterval(countdownInterval);
-    navigateTo('main');
-  }, 10000);
+    goToMainFromSuccess();
+  }, 15000);
 }
 
 // === Virtual Keyboard ===

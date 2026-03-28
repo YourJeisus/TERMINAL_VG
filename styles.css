@@ -1162,20 +1162,99 @@ body {
   color: rgba(255,255,255,0.19);
 }
 
-.tkt-card {
+/* Scrollable content area */
+.tkt-scroll {
   flex: 1;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.tkt-scroll::-webkit-scrollbar { display: none; }
+
+/* Carousel */
+.tkt-carousel {
+  position: relative;
+  margin: 0 40px 20px;
+  border-radius: 20px;
+  overflow: hidden;
+}
+
+.tkt-carousel-track {
+  display: flex;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+
+.tkt-carousel-track::-webkit-scrollbar { display: none; }
+
+.tkt-carousel-slide {
+  flex: 0 0 100%;
+  width: 100%;
+  height: 320px;
+  object-fit: cover;
+  scroll-snap-align: start;
+}
+
+.tkt-carousel-dots {
+  position: absolute;
+  bottom: 12px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 8px;
+}
+
+.tkt-carousel-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.4);
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.tkt-carousel-dot.active {
+  background: #fff;
+  width: 24px;
+  border-radius: 4px;
+}
+
+/* Description */
+.tkt-description {
+  padding: 0 40px 16px;
+}
+
+.tkt-description p {
+  margin: 0;
+  font-size: 17px;
+  font-weight: 400;
+  line-height: 1.6;
+  color: rgba(255, 255, 255, 0.55);
+}
+
+.tkt-card {
   display: flex;
   flex-direction: column;
   gap: 16px;
   background: transparent;
   border-radius: 24px;
   border: none;
-  padding: 20px 40px 28px;
-  overflow-y: auto;
-  -webkit-overflow-scrolling: touch;
+  padding: 0 40px 28px;
 }
 
-.tkt-card::-webkit-scrollbar { display: none; }
+/* Sticky bottom bar */
+.tkt-bottom-bar {
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 20px 40px 28px;
+  background: linear-gradient(to top, rgba(0,0,0,0.95) 60%, transparent);
+}
 
 .tkt-rows {
   display: flex;
@@ -1380,10 +1459,7 @@ body {
   align-items: center;
   justify-content: flex-end;
   gap: 16px;
-  height: 110px;
-  padding: 28px 32px;
-  border-radius: 12px;
-  background: rgba(255,255,255,0.03);
+  padding: 0 8px;
   border: 1px solid rgba(255,255,255,0.06);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
@@ -1402,14 +1478,14 @@ body {
 
 .tkt-pay-btn {
   width: 100%;
-  height: 120px;
+  height: 72px;
   display: flex;
   align-items: center;
   justify-content: center;
   background: linear-gradient(to right, #6AAFE6, #5090D0);
   color: #FFFFFF;
   font-family: 'Gotham', 'Inter', sans-serif;
-  font-size: 28px;
+  font-size: 22px;
   font-weight: 800;
   letter-spacing: 2px;
   border: none;
@@ -1429,21 +1505,19 @@ body {
 
 .tkt-back-btn {
   width: 100%;
-  height: 100px;
+  height: 56px;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgba(255,255,255,0.15);
+  background: rgba(255,255,255,0.08);
   color: #999999;
   font-family: 'Gotham', 'Inter', sans-serif;
-  font-size: 24px;
+  font-size: 18px;
   font-weight: 700;
   letter-spacing: 2px;
-  border: 2px solid rgba(255,255,255,0.25);
+  border: 1.5px solid rgba(255,255,255,0.15);
   border-radius: 100px;
   cursor: pointer;
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
   transition: all 0.2s;
 }
 
@@ -1846,8 +1920,7 @@ body {
   color: #34D399;
 }
 
-/* Receipt inline on success screen */
-.success-receipt {
+.success-receipt-question {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -1863,25 +1936,27 @@ body {
 }
 
 .success-receipt-title {
-  font-size: 22px;
-  font-weight: 700;
+  font-size: 20px;
+  font-weight: 500;
   text-align: center;
-  color: rgba(255,255,255,0.8);
+  color: rgba(255,255,255,0.7);
+  margin: 0;
 }
 
 .success-receipt-buttons {
   display: flex;
-  gap: 16px;
+  flex-direction: column;
+  gap: 12px;
   width: 100%;
 }
 
 .success-receipt-btn {
-  flex: 1;
-  padding: 20px;
+  width: 100%;
+  padding: 18px 24px;
   border-radius: 16px;
   border: none;
-  font-size: 20px;
-  font-weight: 900;
+  font-size: 18px;
+  font-weight: 700;
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -1899,9 +1974,9 @@ body {
 }
 
 .success-receipt-btn--no {
-  background: rgba(255,255,255,0.1);
-  color: #fff;
-  border: 1.5px solid rgba(255,255,255,0.2);
+  background: rgba(255,255,255,0.08);
+  color: rgba(255,255,255,0.7);
+  border: 1.5px solid rgba(255,255,255,0.15);
 }
 
 .success-receipt-email {
@@ -1948,6 +2023,204 @@ body {
 
 .success-home-btn:active {
   transform: scale(0.98);
+}
+
+/* === Payment Loader === */
+.payment-loader {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+
+.payment-loader.active {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.payment-loader-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  background: rgba(20, 20, 22, 0.85);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 24px;
+  padding: 40px 48px;
+}
+
+.payment-spinner {
+  width: 48px;
+  height: 48px;
+  border: 3px solid rgba(255, 255, 255, 0.12);
+  border-top-color: #D42D5A;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.payment-loader-text {
+  color: rgba(255, 255, 255, 0.75);
+  font-family: 'Gotham', 'Inter', sans-serif;
+  font-size: 18px;
+  font-weight: 500;
+}
+
+/* === Inactivity Modal === */
+.inactivity-modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+
+.inactivity-modal.active {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.inactivity-modal-card {
+  background: rgba(20, 20, 22, 0.92);
+  backdrop-filter: blur(32px);
+  -webkit-backdrop-filter: blur(32px);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 32px;
+  padding: 56px 56px 48px;
+  max-width: 560px;
+  width: 90%;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+}
+
+.inactivity-modal-text {
+  color: #fff;
+  font-family: 'Gotham', 'Inter', sans-serif;
+  font-size: 26px;
+  font-weight: 500;
+  line-height: 1.45;
+  margin: 0;
+}
+
+.inactivity-modal-text span {
+  font-weight: 900;
+  color: #6AAFE6;
+  font-size: 32px;
+}
+
+.inactivity-modal-hint {
+  color: rgba(255, 255, 255, 0.4);
+  font-family: 'Gotham', 'Inter', sans-serif;
+  font-size: 17px;
+  font-weight: 400;
+  margin: 0;
+}
+
+.inactivity-modal-buttons {
+  display: flex;
+  gap: 16px;
+  width: 100%;
+  margin-top: 12px;
+}
+
+.inactivity-btn {
+  flex: 1;
+  padding: 22px 16px;
+  border-radius: 18px;
+  border: none;
+  font-family: 'Gotham', 'Inter', sans-serif;
+  font-size: 20px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform 0.1s;
+}
+
+.inactivity-btn:active { transform: scale(0.97); }
+
+.inactivity-btn--continue {
+  background: linear-gradient(135deg, #6AAFE6, #5090D0);
+  color: #fff;
+  box-shadow: 0 4px 20px rgba(106, 175, 230, 0.3);
+}
+
+.inactivity-btn--exit {
+  background: rgba(255, 255, 255, 0.08);
+  color: rgba(255, 255, 255, 0.7);
+  border: 1.5px solid rgba(255, 255, 255, 0.15);
+}
+
+/* === Print Loader === */
+.print-loader {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+
+.print-loader.active {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.print-loader-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  background: rgba(20, 20, 22, 0.85);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 24px;
+  padding: 40px 48px;
+}
+
+.print-spinner {
+  width: 48px;
+  height: 48px;
+  border: 3px solid rgba(255, 255, 255, 0.12);
+  border-top-color: #2ECC71;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+.print-loader-text {
+  color: rgba(255, 255, 255, 0.75);
+  font-family: 'Gotham', 'Inter', sans-serif;
+  font-size: 18px;
+  font-weight: 500;
+}
+
+.print-loader-count {
+  color: rgba(255, 255, 255, 0.4);
+  font-family: 'Gotham', 'Inter', sans-serif;
+  font-size: 14px;
+  font-weight: 400;
 }
 
 /* === Receipt Modal === */
@@ -2521,15 +2794,20 @@ body {
   .info-card-icon { font-size: 28px; }
   .tkt-title-area { padding: 24px 20px; }
   .tkt-title { font-size: 26px; }
-  .tkt-card { padding: 16px 20px 28px; gap: 20px; }
+  .tkt-carousel { margin: 0 20px 16px; }
+  .tkt-carousel-slide { height: 220px; }
+  .tkt-description { padding: 0 20px 12px; }
+  .tkt-description p { font-size: 15px; }
+  .tkt-card { padding: 0 20px 20px; gap: 16px; }
+  .tkt-bottom-bar { padding: 16px 20px 24px; gap: 10px; }
   .tkt-row { height: 100px; padding: 0 20px; gap: 16px; }
   .tkt-pill { font-size: 14px; padding: 12px 16px; }
   .tkt-price { font-size: 20px; }
   .tkt-counter-btn { width: 42px; height: 42px; font-size: 22px; }
   .tkt-counter-val { width: 42px; height: 42px; font-size: 20px; }
-  .tkt-total { height: 80px; padding: 20px 24px; }
-  .tkt-total-label { font-size: 22px; }
-  .tkt-total-value { font-size: 28px; }
+  .tkt-total { padding: 0 4px; }
+  .tkt-total-label { font-size: 20px; }
+  .tkt-total-value { font-size: 24px; }
   .tkt-combo { height: 200px; min-height: 200px; }
   .tkt-combo-content { padding: 16px 20px; }
   .tkt-combo-title { font-size: 20px; }
@@ -2538,8 +2816,8 @@ body {
   .tkt-combo-badge { font-size: 12px; height: 28px; }
   .tkt-combo-counter .tkt-counter-btn { width: 40px; height: 40px; font-size: 22px; }
   .tkt-combo-counter-val { width: 40px; height: 40px; font-size: 18px; }
-  .tkt-pay-btn { height: 80px; font-size: 22px; }
-  .tkt-back-btn { height: 70px; font-size: 20px; }
+  .tkt-pay-btn { height: 64px; font-size: 20px; }
+  .tkt-back-btn { height: 48px; font-size: 16px; }
   .instructors-grid { grid-template-columns: repeat(2, 1fr); }
   .success-card { padding: 48px 24px; border-radius: 24px; gap: 24px; }
   .success-title { font-size: 26px; }

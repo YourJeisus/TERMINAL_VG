@@ -100,6 +100,8 @@ class TerminalHandler(http.server.SimpleHTTPRequestHandler):
     def do_POST(self):
         if self.path == '/print':
             self._handle_print()
+        elif self.path == '/api/categories':
+            self._handle_api_proxy()
         else:
             self.send_error(404)
 
@@ -142,6 +144,42 @@ class TerminalHandler(http.server.SimpleHTTPRequestHandler):
                 'message': str(e)
             }).encode())
 
+    def _handle_api_proxy(self):
+        """Proxy POST to external ticket API (bypasses CORS)."""
+        import urllib.request
+        try:
+            length = int(self.headers.get('Content-Length', 0))
+            body = self.rfile.read(length)
+
+            api_url = 'https://vgsport-admin.eskimos.ski/api/v1/tickets/terminal/categories'
+            req = urllib.request.Request(
+                api_url,
+                data=body,
+                headers={
+                    'Content-Type': 'application/json',
+                    'Cookie': 'terminal_id=1'
+                },
+                method='POST'
+            )
+            with urllib.request.urlopen(req, timeout=10) as resp:
+                resp_body = resp.read()
+
+            self.send_response(200)
+            self.send_header('Content-Type', 'application/json')
+            self.end_headers()
+            self.wfile.write(resp_body)
+            print(f"[API PROXY] OK, {len(resp_body)} bytes")
+
+        except Exception as e:
+            self.send_response(502)
+            self.send_header('Content-Type', 'application/json')
+            self.end_headers()
+            self.wfile.write(json.dumps({
+                'error': True,
+                'message': str(e)
+            }).encode())
+            print(f"[API PROXY] Error: {e}")
+
     def do_GET(self):
         if self.path == '/printer-status':
             self._handle_status()
@@ -167,7 +205,7 @@ class TerminalHandler(http.server.SimpleHTTPRequestHandler):
 
 
 if __name__ == '__main__':
-    port = int(os.environ.get('PORT', 8888))
+    port = int(os.environ.get('PORT', 9999))
     print_only = '--print-only' in sys.argv
 
     init_printer()

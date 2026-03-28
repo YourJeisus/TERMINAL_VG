@@ -403,7 +403,7 @@ const TicketService = {
     if (!dataURL) { callback(false); return; }
 
     var xhr = new XMLHttpRequest();
-    xhr.open('POST', 'http://localhost:8888/print', true);
+    xhr.open('POST', 'http://localhost:9999/print', true);
     xhr.setRequestHeader('Content-Type', 'application/json');
     xhr.timeout = 5000;
     xhr.onload = function() {

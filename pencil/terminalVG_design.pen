@@ -7630,6 +7630,90 @@
           ]
         }
       ]
+    },
+    {
+      "type": "frame",
+      "id": "xKz0j",
+      "x": 0,
+      "y": 4120,
+      "name": "Чек / Билет",
+      "width": 302,
+      "fill": "#FFFFFF",
+      "layout": "vertical",
+      "padding": [
+        16,
+        16,
+        20,
+        16
+      ],
+      "alignItems": "center",
+      "children": [
+        {
+          "type": "frame",
+          "id": "dIX4P",
+          "name": "logoWrap",
+          "width": 180,
+          "height": 66,
+          "fill": {
+            "type": "image",
+            "enabled": true,
+            "url": "./images/generated-1773566411269.png",
+            "mode": "fill"
+          }
+        },
+        {
+          "type": "rectangle",
+          "id": "m8S2V",
+          "name": "line1",
+          "fill": "#000000",
+          "width": 270,
+          "height": 2
+        },
+        {
+          "type": "frame",
+          "id": "d50Uy",
+          "name": "titleSection",
+          "layout": "vertical",
+          "gap": 2,
+          "padding": [
+            10,
+            0
+          ],
+          "alignItems": "center",
+          "children": [
+            {
+              "type": "text",
+              "id": "bqdka",
+              "name": "titleTxt",
+              "fill": "#000000",
+              "content": "Билет",
+              "textAlign": "center",
+              "fontFamily": "Inter",
+              "fontSize": 18,
+              "fontWeight": "700"
+            },
+            {
+              "type": "text",
+              "id": "65Mww",
+              "name": "typeTxt",
+              "fill": "#000000",
+              "content": "Взрослый (в 1 сторону)",
+              "textAlign": "center",
+              "fontFamily": "Inter",
+              "fontSize": 11,
+              "fontWeight": "600"
+            }
+          ]
+        },
+        {
+          "type": "rectangle",
+          "id": "95t8P",
+          "name": "line2",
+          "fill": "#000000",
+          "width": 270,
+          "height": 2
+        }
+      ]
     }
   ],
   "variables": {
