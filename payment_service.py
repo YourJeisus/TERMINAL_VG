@@ -32,7 +32,7 @@ from datetime import datetime, timedelta
 # Configuration
 # ---------------------------------------------------------------------------
 DC_HOST = os.environ.get('DC_HOST', '127.0.0.1')
-DC_PORT = int(os.environ.get('DC_PORT', '8888'))
+DC_PORT = int(os.environ.get('DC_PORT', '47657'))
 PAY_PORT = int(os.environ.get('PAY_PORT', '5050'))
 DC_TIMEOUT = 120   # seconds — enough for card tap + bank authorization
 SETTLEMENT_TIME = os.environ.get('SETTLEMENT_TIME', '23:55')  # HH:MM — auto-settlement
