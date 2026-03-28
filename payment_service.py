@@ -4,11 +4,12 @@ Payment bridge: HTTP REST <-> INPAS DualConnector HTTP/XML.
 Translates requests from Chrome into HTTP POST commands for DC Service.
 
 Architecture:
-  Chrome (fetch) -> HTTP localhost:5050 -> this service -> HTTP localhost:9015 -> DC Service -> COM3 -> PAX S300 -> Bank
+  Chrome -> HTTP :5050 -> this -> HTTP :9015 -> DC Service -> COM3 -> PAX S300 -> Bank
 
-Usage:
-  python payment_service.py
-  python payment_service.py --dc-port 9015
+Protocol (from kkmspb.ru debug dumps):
+  POST / HTTP/1.1, Content-Type: text/xml
+  <request><field id="25">OP</field><field id="04">AMOUNT</field><timeout>N</timeout></request>
+  Response: windows-1251 XML with <field id="39">response_code</field>
 """
 
 import http.server
@@ -29,52 +30,60 @@ from datetime import datetime, timedelta
 DC_HOST = os.environ.get('DC_HOST', '127.0.0.1')
 DC_PORT = int(os.environ.get('DC_PORT', '9015'))
 PAY_PORT = int(os.environ.get('PAY_PORT', '5050'))
-DC_TIMEOUT = 120   # seconds
+DC_TIMEOUT = 120
 SETTLEMENT_TIME = os.environ.get('SETTLEMENT_TIME', '23:55')
 
-# INPAS field IDs (ISO 8583 based)
-# Field 00: Operation type
-# Field 04: Amount (kopecks)
-# Field 20: Currency code
-# Field 37: RRN (for cancel/refund)
-
+# INPAS operation codes (field 25)
 OP_PURCHASE   = '1'
 OP_CANCEL     = '2'
 OP_REFUND     = '3'
 OP_SETTLEMENT = '7'
-OP_STATUS     = '50'
+OP_TEST       = '26'
 
-CURRENCY_RUB = '643'
+# INPAS field IDs
+F_OPERATION = '25'   # Operation type
+F_AMOUNT    = '04'   # Amount in kopecks
+F_TIMESTAMP = '21'   # YYYYMMDDHHmmss
+F_RRN       = '37'   # Retrieval Reference Number
+F_AUTHCODE  = '38'   # Authorization code
+F_RESPONSE  = '39'   # Response code (00=OK)
+F_CARD      = '34'   # Masked card number
+F_TERMINAL  = '27'   # Terminal ID
+F_MESSAGE   = '19'   # Status message text
+F_RECEIPT   = '90'   # Receipt / additional data
 
 
 # ---------------------------------------------------------------------------
-# DualConnector HTTP protocol (POST XML to http://host:port/)
+# DualConnector HTTP protocol
 # ---------------------------------------------------------------------------
 
-def build_xml(operation_code, amount=None, currency=CURRENCY_RUB, rrn=None):
+def build_xml(operation, amount=None, rrn=None, timeout_sec=120):
     """Build INPAS field-based XML request."""
     root = ET.Element('request')
-    ET.SubElement(root, 'field', id='00').text = str(operation_code)
+    ET.SubElement(root, 'field', id=F_OPERATION).text = str(operation)
     if amount is not None:
-        ET.SubElement(root, 'field', id='04').text = str(int(amount))
-    ET.SubElement(root, 'field', id='20').text = str(currency)
+        ET.SubElement(root, 'field', id=F_AMOUNT).text = str(int(amount))
     if rrn:
-        ET.SubElement(root, 'field', id='37').text = str(rrn)
-
-    return '<?xml version="1.0" encoding="UTF-8"?>\n' + ET.tostring(root, encoding='unicode')
+        ET.SubElement(root, 'field', id=F_RRN).text = str(rrn)
+    ET.SubElement(root, 'timeout').text = str(timeout_sec)
+    return ET.tostring(root, encoding='unicode')
 
 
 def send_to_dc(xml_str, timeout=DC_TIMEOUT):
-    """Send XML to DualConnector via HTTP POST and return response XML string."""
+    """Send XML to DualConnector via HTTP POST."""
     url = f'http://{DC_HOST}:{DC_PORT}/'
     data = xml_str.encode('utf-8')
+
+    print(f'[DC] >>> POST {url}')
+    print(f'[DC] >>> {xml_str}')
 
     req = urllib.request.Request(
         url,
         data=data,
         headers={
-            'Content-Type': 'application/xml; charset=utf-8',
-            'Content-Length': str(len(data)),
+            'Content-Type': 'text/xml',
+            'Accept': 'text/html',
+            'Connection': 'Keep-Alive',
         },
         method='POST'
     )
@@ -82,44 +91,40 @@ def send_to_dc(xml_str, timeout=DC_TIMEOUT):
     try:
         with urllib.request.urlopen(req, timeout=timeout) as resp:
             resp_body = resp.read()
-            # Try UTF-8 first, then windows-1251
+            # DC responds in windows-1251
             try:
-                return resp_body.decode('utf-8')
+                decoded = resp_body.decode('windows-1251')
             except UnicodeDecodeError:
-                return resp_body.decode('windows-1251')
+                decoded = resp_body.decode('utf-8', errors='replace')
+            print(f'[DC] <<< {decoded[:500]}')
+            return decoded
     except urllib.error.HTTPError as e:
         body = e.read().decode('utf-8', errors='replace')
-        raise Exception(f'DC HTTP {e.code}: {body[:300]}')
+        print(f'[DC] <<< HTTP {e.code}: {body[:300]}')
+        raise Exception(f'DC HTTP error {e.code}: {body[:200]}')
 
 
 def parse_response(xml_str):
-    """Parse INPAS field-based XML response into a dict keyed by field id."""
+    """Parse INPAS field-based XML response."""
+    result = {}
     try:
         root = ET.fromstring(xml_str)
-        result = {}
         for child in root:
             if child.tag == 'field':
                 fid = child.get('id', '')
                 result[fid] = child.text or ''
             else:
-                # Fallback: tag-based format
-                result[child.tag.lower()] = child.text or ''
-        return result
+                result[child.tag] = child.text or ''
     except ET.ParseError as e:
-        return {'parse_error': str(e), 'raw_xml': xml_str}
+        result['_parse_error'] = str(e)
+        result['_raw'] = xml_str
+    return result
 
 
-def extract_response(result):
-    """Extract standard fields from parsed INPAS response."""
-    return {
-        'response_code':      result.get('39', ''),
-        'message':            result.get('48', result.get('message', '')),
-        'rrn':                result.get('37', ''),
-        'authorization_code': result.get('38', ''),
-        'card_number':        result.get('34', result.get('19', '')),
-        'terminal_id':        result.get('41', ''),
-        'amount':             result.get('04', ''),
-    }
+def is_success(fields):
+    """Check if response indicates success."""
+    code = fields.get(F_RESPONSE, '')
+    return code == '00'
 
 
 # ---------------------------------------------------------------------------
@@ -151,14 +156,13 @@ class PaymentHandler(http.server.BaseHTTPRequestHandler):
             '/api/refund':     self._handle_refund,
             '/api/status':     self._handle_status,
             '/api/settlement': self._handle_settlement,
+            '/api/test':       self._handle_test,
         }
         handler = routes.get(self.path)
         if handler:
             handler()
         else:
             self.send_error(404)
-
-    # --- helpers ---
 
     def _read_json(self):
         length = int(self.headers.get('Content-Length', 0))
@@ -173,7 +177,45 @@ class PaymentHandler(http.server.BaseHTTPRequestHandler):
         self.end_headers()
         self.wfile.write(body)
 
-    # --- endpoints ---
+    def _make_response(self, fields):
+        """Build standard JSON response from INPAS fields."""
+        return {
+            'response_code':      fields.get(F_RESPONSE, ''),
+            'message':            fields.get(F_MESSAGE, ''),
+            'rrn':                fields.get(F_RRN, ''),
+            'authorization_code': fields.get(F_AUTHCODE, ''),
+            'card_number':        fields.get(F_CARD, ''),
+            'terminal_id':        fields.get(F_TERMINAL, ''),
+            'amount':             fields.get(F_AMOUNT, ''),
+            'receipt':            fields.get(F_RECEIPT, ''),
+            'all_fields':         fields,
+        }
+
+    # --- Test endpoint (uses same format as DC Control test) ---
+
+    def _handle_test(self):
+        """POST /api/test — test connection (same as DC Control)."""
+        try:
+            print('[TEST] Testing DualConnector connection...')
+            xml_req = build_xml(OP_TEST, timeout_sec=60)
+            xml_resp = send_to_dc(xml_req, timeout=30)
+            fields = parse_response(xml_resp)
+            resp = self._make_response(fields)
+            resp['success'] = True
+            resp['connected'] = True
+            self._send_json(200, resp)
+        except urllib.error.URLError as e:
+            self._send_json(200, {
+                'success': False, 'connected': False,
+                'error': f'Cannot connect: {e.reason}',
+            })
+        except Exception as e:
+            self._send_json(200, {
+                'success': False, 'connected': False,
+                'error': str(e),
+            })
+
+    # --- Payment endpoints ---
 
     def _handle_pay(self):
         """POST /api/pay  {amount: kopecks, order_id: string}"""
@@ -188,31 +230,17 @@ class PaymentHandler(http.server.BaseHTTPRequestHandler):
 
             print(f'[PAY] Purchase: {int(amount)} kopecks, order={order_id}')
 
-            xml_req = build_xml(OP_PURCHASE, amount=int(amount))
-            print(f'[PAY] Sending XML: {xml_req}')
-
+            xml_req = build_xml(OP_PURCHASE, amount=int(amount), timeout_sec=DC_TIMEOUT)
             xml_resp = send_to_dc(xml_req, timeout=DC_TIMEOUT)
-            print(f'[PAY] Response XML: {xml_resp[:500]}')
+            fields = parse_response(xml_resp)
 
-            result = parse_response(xml_resp)
-            fields = extract_response(result)
+            success = is_success(fields)
+            resp = self._make_response(fields)
+            resp['success'] = success
 
-            code = fields['response_code']
-            success = (code == '00')
-
-            response = {
-                'success':            success,
-                'response_code':      code,
-                'message':            fields['message'],
-                'rrn':                fields['rrn'],
-                'authorization_code': fields['authorization_code'],
-                'card_number':        fields['card_number'],
-                'terminal_id':        fields['terminal_id'],
-                'raw_fields':         result,  # For debugging
-            }
-            tag = 'OK' if success else f'DECLINED ({code})'
-            print(f'[PAY] Result: {tag}, rrn={fields["rrn"]}')
-            self._send_json(200, response)
+            tag = 'OK' if success else f'DECLINED ({fields.get(F_RESPONSE, "?")})'
+            print(f'[PAY] {tag}: {fields.get(F_MESSAGE, "")}')
+            self._send_json(200, resp)
 
         except urllib.error.URLError as e:
             print(f'[PAY] Connection error: {e}')
@@ -235,17 +263,13 @@ class PaymentHandler(http.server.BaseHTTPRequestHandler):
                 self._send_json(400, {'success': False, 'error': 'amount and rrn required'})
                 return
 
-            print(f'[CANCEL] amount={amount}, rrn={rrn}')
+            print(f'[CANCEL] {amount} kopecks, rrn={rrn}')
             xml_req = build_xml(OP_CANCEL, amount=int(amount), rrn=rrn)
             xml_resp = send_to_dc(xml_req)
-            result = parse_response(xml_resp)
-            fields = extract_response(result)
-            success = fields['response_code'] == '00'
-            self._send_json(200, {
-                'success': success,
-                'response_code': fields['response_code'],
-                'message': fields['message'],
-            })
+            fields = parse_response(xml_resp)
+            resp = self._make_response(fields)
+            resp['success'] = is_success(fields)
+            self._send_json(200, resp)
         except Exception as e:
             print(f'[CANCEL] Error: {e}')
             self._send_json(500, {'success': False, 'error': str(e)})
@@ -260,17 +284,13 @@ class PaymentHandler(http.server.BaseHTTPRequestHandler):
                 self._send_json(400, {'success': False, 'error': 'amount and rrn required'})
                 return
 
-            print(f'[REFUND] amount={amount}, rrn={rrn}')
+            print(f'[REFUND] {amount} kopecks, rrn={rrn}')
             xml_req = build_xml(OP_REFUND, amount=int(amount), rrn=rrn)
             xml_resp = send_to_dc(xml_req)
-            result = parse_response(xml_resp)
-            fields = extract_response(result)
-            success = fields['response_code'] == '00'
-            self._send_json(200, {
-                'success': success,
-                'response_code': fields['response_code'],
-                'message': fields['message'],
-            })
+            fields = parse_response(xml_resp)
+            resp = self._make_response(fields)
+            resp['success'] = is_success(fields)
+            self._send_json(200, resp)
         except Exception as e:
             print(f'[REFUND] Error: {e}')
             self._send_json(500, {'success': False, 'error': str(e)})
@@ -278,16 +298,13 @@ class PaymentHandler(http.server.BaseHTTPRequestHandler):
     def _handle_status(self):
         """POST|GET /api/status"""
         try:
-            xml_req = build_xml(OP_STATUS)
-            xml_resp = send_to_dc(xml_req, timeout=10)
-            result = parse_response(xml_resp)
-            fields = extract_response(result)
-            success = fields['response_code'] == '00'
+            xml_req = build_xml(OP_TEST, timeout_sec=30)
+            xml_resp = send_to_dc(xml_req, timeout=15)
+            fields = parse_response(xml_resp)
             self._send_json(200, {
-                'success': success,
-                'connected': success,
-                'message': fields['message'],
-                'raw_fields': result,
+                'success': True, 'connected': True,
+                'message': fields.get(F_MESSAGE, ''),
+                'all_fields': fields,
             })
         except urllib.error.URLError:
             self._send_json(200, {
@@ -304,17 +321,14 @@ class PaymentHandler(http.server.BaseHTTPRequestHandler):
         """POST /api/settlement"""
         try:
             print('[SETTLEMENT] Starting...')
-            xml_req = build_xml(OP_SETTLEMENT)
+            xml_req = build_xml(OP_SETTLEMENT, timeout_sec=60)
             xml_resp = send_to_dc(xml_req, timeout=60)
-            result = parse_response(xml_resp)
-            fields = extract_response(result)
-            success = fields['response_code'] == '00'
-            tag = 'OK' if success else 'FAILED'
-            print(f'[SETTLEMENT] {tag}')
-            self._send_json(200, {
-                'success': success,
-                'message': fields['message'],
-            })
+            fields = parse_response(xml_resp)
+            success = is_success(fields)
+            print(f'[SETTLEMENT] {"OK" if success else "FAILED"}: {fields.get(F_MESSAGE, "")}')
+            resp = self._make_response(fields)
+            resp['success'] = success
+            self._send_json(200, resp)
         except Exception as e:
             print(f'[SETTLEMENT] Error: {e}')
             self._send_json(500, {'success': False, 'error': str(e)})
@@ -328,15 +342,13 @@ class PaymentHandler(http.server.BaseHTTPRequestHandler):
 # ---------------------------------------------------------------------------
 
 def run_settlement():
-    """Execute settlement operation."""
     try:
         print(f'[SETTLEMENT] Auto-settlement at {time.strftime("%H:%M:%S")}')
-        xml_req = build_xml(OP_SETTLEMENT)
+        xml_req = build_xml(OP_SETTLEMENT, timeout_sec=60)
         xml_resp = send_to_dc(xml_req, timeout=60)
-        result = parse_response(xml_resp)
-        fields = extract_response(result)
-        success = fields['response_code'] == '00'
-        print(f'[SETTLEMENT] {"OK" if success else "FAILED"}: {fields["message"]}')
+        fields = parse_response(xml_resp)
+        success = is_success(fields)
+        print(f'[SETTLEMENT] {"OK" if success else "FAILED"}: {fields.get(F_MESSAGE, "")}')
         return success
     except Exception as e:
         print(f'[SETTLEMENT] Error: {e}')
@@ -344,7 +356,6 @@ def run_settlement():
 
 
 def settlement_scheduler():
-    """Background thread: runs settlement daily at SETTLEMENT_TIME."""
     while True:
         now = datetime.now()
         hour, minute = map(int, SETTLEMENT_TIME.split(':'))
@@ -372,11 +383,11 @@ if __name__ == '__main__':
     print('=' * 50)
     print('  PAX S300 Payment Service')
     print('=' * 50)
-    print(f'  HTTP listen:       0.0.0.0:{PAY_PORT}')
-    print(f'  DualConnector:     http://{DC_HOST}:{DC_PORT}/')
-    print(f'  Protocol:          HTTP POST (XML fields)')
-    print(f'  DC timeout:        {DC_TIMEOUT}s')
-    print(f'  Auto-settlement:   {SETTLEMENT_TIME}')
+    print(f'  Listen:          http://0.0.0.0:{PAY_PORT}')
+    print(f'  DualConnector:   http://{DC_HOST}:{DC_PORT}/')
+    print(f'  Protocol:        HTTP POST, field id="25"')
+    print(f'  Timeout:         {DC_TIMEOUT}s')
+    print(f'  Settlement:      {SETTLEMENT_TIME}')
     print('=' * 50)
 
     settler = threading.Thread(target=settlement_scheduler, daemon=True)
