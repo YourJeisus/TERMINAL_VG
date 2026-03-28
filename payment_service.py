@@ -1,31 +1,26 @@
 #!/usr/bin/env python3
 """
-Payment bridge: HTTP REST ↔ INPAS DualConnector TCP/XML.
-Translates requests from Chrome into TCP commands for PAX S300 via DC Service.
+Payment bridge: HTTP REST <-> INPAS DualConnector HTTP/XML.
+Translates requests from Chrome into HTTP POST commands for DC Service.
 
 Architecture:
-  Chrome (fetch) → HTTP localhost:5050 → this service → TCP localhost:DC_PORT → DC Service → USB → PAX S300 → Ethernet → Bank
+  Chrome (fetch) -> HTTP localhost:5050 -> this service -> HTTP localhost:9015 -> DC Service -> COM3 -> PAX S300 -> Bank
 
 Usage:
   python payment_service.py
-  python payment_service.py --dc-port 8888
-
-Environment variables:
-  DC_HOST  — DualConnector host (default: 127.0.0.1)
-  DC_PORT  — DualConnector TCP port (default: 8888)
-  PAY_PORT — This service HTTP port (default: 5050)
+  python payment_service.py --dc-port 9015
 """
 
 import http.server
 import json
-import socket
-import struct
 import threading
 import xml.etree.ElementTree as ET
 import os
 import sys
 import time
 import traceback
+import urllib.request
+import urllib.error
 from datetime import datetime, timedelta
 
 # ---------------------------------------------------------------------------
@@ -34,78 +29,97 @@ from datetime import datetime, timedelta
 DC_HOST = os.environ.get('DC_HOST', '127.0.0.1')
 DC_PORT = int(os.environ.get('DC_PORT', '9015'))
 PAY_PORT = int(os.environ.get('PAY_PORT', '5050'))
-DC_TIMEOUT = 120   # seconds — enough for card tap + bank authorization
-SETTLEMENT_TIME = os.environ.get('SETTLEMENT_TIME', '23:55')  # HH:MM — auto-settlement
+DC_TIMEOUT = 120   # seconds
+SETTLEMENT_TIME = os.environ.get('SETTLEMENT_TIME', '23:55')
 
-# INPAS SmartSale operation codes
-OP_PURCHASE   = 1
-OP_CANCEL     = 2
-OP_REFUND     = 3
-OP_SETTLEMENT = 7
-OP_STATUS     = 50
+# INPAS field IDs (ISO 8583 based)
+# Field 00: Operation type
+# Field 04: Amount (kopecks)
+# Field 20: Currency code
+# Field 37: RRN (for cancel/refund)
 
-CURRENCY_RUB = 643
+OP_PURCHASE   = '1'
+OP_CANCEL     = '2'
+OP_REFUND     = '3'
+OP_SETTLEMENT = '7'
+OP_STATUS     = '50'
+
+CURRENCY_RUB = '643'
 
 
 # ---------------------------------------------------------------------------
-# DualConnector TCP protocol (4-byte big-endian length + XML body)
+# DualConnector HTTP protocol (POST XML to http://host:port/)
 # ---------------------------------------------------------------------------
 
 def build_xml(operation_code, amount=None, currency=CURRENCY_RUB, rrn=None):
-    """Build XML request for DualConnector 2.x."""
+    """Build INPAS field-based XML request."""
     root = ET.Element('request')
-    ET.SubElement(root, 'operation_code').text = str(operation_code)
+    ET.SubElement(root, 'field', id='00').text = str(operation_code)
     if amount is not None:
-        ET.SubElement(root, 'amount').text = str(int(amount))
-    ET.SubElement(root, 'currency_code').text = str(currency)
+        ET.SubElement(root, 'field', id='04').text = str(int(amount))
+    ET.SubElement(root, 'field', id='20').text = str(currency)
     if rrn:
-        ET.SubElement(root, 'rrn').text = str(rrn)
+        ET.SubElement(root, 'field', id='37').text = str(rrn)
 
-    xml_decl = '<?xml version="1.0" encoding="windows-1251"?>\n'
-    body = ET.tostring(root, encoding='unicode')
-    return xml_decl + body
+    return '<?xml version="1.0" encoding="UTF-8"?>\n' + ET.tostring(root, encoding='unicode')
 
 
 def send_to_dc(xml_str, timeout=DC_TIMEOUT):
-    """Send XML to DualConnector via TCP and return response XML string."""
-    encoded = xml_str.encode('windows-1251')
-    header = struct.pack('>I', len(encoded))
+    """Send XML to DualConnector via HTTP POST and return response XML string."""
+    url = f'http://{DC_HOST}:{DC_PORT}/'
+    data = xml_str.encode('utf-8')
 
-    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    sock.settimeout(timeout)
+    req = urllib.request.Request(
+        url,
+        data=data,
+        headers={
+            'Content-Type': 'application/xml; charset=utf-8',
+            'Content-Length': str(len(data)),
+        },
+        method='POST'
+    )
+
     try:
-        sock.connect((DC_HOST, DC_PORT))
-        sock.sendall(header + encoded)
-
-        # Read 4-byte response length
-        resp_hdr = _recv_exact(sock, 4)
-        resp_len = struct.unpack('>I', resp_hdr)[0]
-
-        # Read response body
-        resp_body = _recv_exact(sock, resp_len)
-        return resp_body.decode('windows-1251')
-    finally:
-        sock.close()
-
-
-def _recv_exact(sock, n):
-    """Read exactly n bytes from socket."""
-    buf = b''
-    while len(buf) < n:
-        chunk = sock.recv(min(4096, n - len(buf)))
-        if not chunk:
-            raise ConnectionError('DualConnector closed connection')
-        buf += chunk
-    return buf
+        with urllib.request.urlopen(req, timeout=timeout) as resp:
+            resp_body = resp.read()
+            # Try UTF-8 first, then windows-1251
+            try:
+                return resp_body.decode('utf-8')
+            except UnicodeDecodeError:
+                return resp_body.decode('windows-1251')
+    except urllib.error.HTTPError as e:
+        body = e.read().decode('utf-8', errors='replace')
+        raise Exception(f'DC HTTP {e.code}: {body[:300]}')
 
 
 def parse_response(xml_str):
-    """Parse DC response XML into a flat dict (lowercase keys)."""
+    """Parse INPAS field-based XML response into a dict keyed by field id."""
     try:
         root = ET.fromstring(xml_str)
-        return {child.tag.lower(): (child.text or '') for child in root}
+        result = {}
+        for child in root:
+            if child.tag == 'field':
+                fid = child.get('id', '')
+                result[fid] = child.text or ''
+            else:
+                # Fallback: tag-based format
+                result[child.tag.lower()] = child.text or ''
+        return result
     except ET.ParseError as e:
         return {'parse_error': str(e), 'raw_xml': xml_str}
+
+
+def extract_response(result):
+    """Extract standard fields from parsed INPAS response."""
+    return {
+        'response_code':      result.get('39', ''),
+        'message':            result.get('48', result.get('message', '')),
+        'rrn':                result.get('37', ''),
+        'authorization_code': result.get('38', ''),
+        'card_number':        result.get('34', result.get('19', '')),
+        'terminal_id':        result.get('41', ''),
+        'amount':             result.get('04', ''),
+    }
 
 
 # ---------------------------------------------------------------------------
@@ -175,36 +189,36 @@ class PaymentHandler(http.server.BaseHTTPRequestHandler):
             print(f'[PAY] Purchase: {int(amount)} kopecks, order={order_id}')
 
             xml_req = build_xml(OP_PURCHASE, amount=int(amount))
-            xml_resp = send_to_dc(xml_req, timeout=DC_TIMEOUT)
-            result = parse_response(xml_resp)
+            print(f'[PAY] Sending XML: {xml_req}')
 
-            code = result.get('response_code', '')
+            xml_resp = send_to_dc(xml_req, timeout=DC_TIMEOUT)
+            print(f'[PAY] Response XML: {xml_resp[:500]}')
+
+            result = parse_response(xml_resp)
+            fields = extract_response(result)
+
+            code = fields['response_code']
             success = (code == '00')
 
             response = {
                 'success':            success,
                 'response_code':      code,
-                'message':            result.get('response_text', result.get('message', '')),
-                'rrn':                result.get('rrn', ''),
-                'authorization_code': result.get('authorization_code', ''),
-                'card_number':        result.get('card_number', ''),
-                'terminal_id':        result.get('terminal_id', ''),
+                'message':            fields['message'],
+                'rrn':                fields['rrn'],
+                'authorization_code': fields['authorization_code'],
+                'card_number':        fields['card_number'],
+                'terminal_id':        fields['terminal_id'],
+                'raw_fields':         result,  # For debugging
             }
             tag = 'OK' if success else f'DECLINED ({code})'
-            print(f'[PAY] Result: {tag}, rrn={response["rrn"]}')
+            print(f'[PAY] Result: {tag}, rrn={fields["rrn"]}')
             self._send_json(200, response)
 
-        except socket.timeout:
-            print('[PAY] Timeout')
-            self._send_json(504, {
-                'success': False,
-                'error': 'Таймаут ожидания терминала. Попробуйте ещё раз.',
-            })
-        except ConnectionRefusedError:
-            print('[PAY] DualConnector not running')
+        except urllib.error.URLError as e:
+            print(f'[PAY] Connection error: {e}')
             self._send_json(503, {
                 'success': False,
-                'error': 'Терминал оплаты не подключён (DualConnector не запущен).',
+                'error': f'DualConnector not available: {e.reason}',
             })
         except Exception as e:
             print(f'[PAY] Error: {e}')
@@ -225,11 +239,12 @@ class PaymentHandler(http.server.BaseHTTPRequestHandler):
             xml_req = build_xml(OP_CANCEL, amount=int(amount), rrn=rrn)
             xml_resp = send_to_dc(xml_req)
             result = parse_response(xml_resp)
-            success = result.get('response_code') == '00'
+            fields = extract_response(result)
+            success = fields['response_code'] == '00'
             self._send_json(200, {
                 'success': success,
-                'response_code': result.get('response_code', ''),
-                'message': result.get('response_text', result.get('message', '')),
+                'response_code': fields['response_code'],
+                'message': fields['message'],
             })
         except Exception as e:
             print(f'[CANCEL] Error: {e}')
@@ -249,37 +264,35 @@ class PaymentHandler(http.server.BaseHTTPRequestHandler):
             xml_req = build_xml(OP_REFUND, amount=int(amount), rrn=rrn)
             xml_resp = send_to_dc(xml_req)
             result = parse_response(xml_resp)
-            success = result.get('response_code') == '00'
+            fields = extract_response(result)
+            success = fields['response_code'] == '00'
             self._send_json(200, {
                 'success': success,
-                'response_code': result.get('response_code', ''),
-                'message': result.get('response_text', result.get('message', '')),
+                'response_code': fields['response_code'],
+                'message': fields['message'],
             })
         except Exception as e:
             print(f'[REFUND] Error: {e}')
             self._send_json(500, {'success': False, 'error': str(e)})
 
     def _handle_status(self):
-        """POST|GET /api/status — check terminal connectivity."""
+        """POST|GET /api/status"""
         try:
             xml_req = build_xml(OP_STATUS)
             xml_resp = send_to_dc(xml_req, timeout=10)
             result = parse_response(xml_resp)
-            success = result.get('response_code') == '00'
+            fields = extract_response(result)
+            success = fields['response_code'] == '00'
             self._send_json(200, {
                 'success': success,
                 'connected': success,
-                'message': result.get('response_text', result.get('message', '')),
+                'message': fields['message'],
+                'raw_fields': result,
             })
-        except ConnectionRefusedError:
+        except urllib.error.URLError:
             self._send_json(200, {
                 'success': False, 'connected': False,
-                'error': 'DualConnector не запущен',
-            })
-        except socket.timeout:
-            self._send_json(200, {
-                'success': False, 'connected': False,
-                'error': 'Таймаут подключения к терминалу',
+                'error': 'DualConnector HTTP not available',
             })
         except Exception as e:
             self._send_json(200, {
@@ -288,18 +301,19 @@ class PaymentHandler(http.server.BaseHTTPRequestHandler):
             })
 
     def _handle_settlement(self):
-        """POST /api/settlement — end-of-day settlement (сверка итогов)."""
+        """POST /api/settlement"""
         try:
             print('[SETTLEMENT] Starting...')
             xml_req = build_xml(OP_SETTLEMENT)
             xml_resp = send_to_dc(xml_req, timeout=60)
             result = parse_response(xml_resp)
-            success = result.get('response_code') == '00'
+            fields = extract_response(result)
+            success = fields['response_code'] == '00'
             tag = 'OK' if success else 'FAILED'
             print(f'[SETTLEMENT] {tag}')
             self._send_json(200, {
                 'success': success,
-                'message': result.get('response_text', result.get('message', '')),
+                'message': fields['message'],
             })
         except Exception as e:
             print(f'[SETTLEMENT] Error: {e}')
@@ -310,23 +324,22 @@ class PaymentHandler(http.server.BaseHTTPRequestHandler):
 
 
 # ---------------------------------------------------------------------------
-# Auto-settlement scheduler (background thread)
+# Auto-settlement scheduler
 # ---------------------------------------------------------------------------
 
 def run_settlement():
-    """Execute settlement operation and return success flag."""
+    """Execute settlement operation."""
     try:
-        print(f'[SETTLEMENT] Auto-settlement starting at {time.strftime("%H:%M:%S")}')
+        print(f'[SETTLEMENT] Auto-settlement at {time.strftime("%H:%M:%S")}')
         xml_req = build_xml(OP_SETTLEMENT)
         xml_resp = send_to_dc(xml_req, timeout=60)
         result = parse_response(xml_resp)
-        success = result.get('response_code') == '00'
-        msg = result.get('response_text', result.get('message', ''))
-        tag = 'OK' if success else 'FAILED'
-        print(f'[SETTLEMENT] Auto-settlement {tag}: {msg}')
+        fields = extract_response(result)
+        success = fields['response_code'] == '00'
+        print(f'[SETTLEMENT] {"OK" if success else "FAILED"}: {fields["message"]}')
         return success
     except Exception as e:
-        print(f'[SETTLEMENT] Auto-settlement error: {e}')
+        print(f'[SETTLEMENT] Error: {e}')
         return False
 
 
@@ -339,7 +352,7 @@ def settlement_scheduler():
         if target <= now:
             target += timedelta(days=1)
         wait_seconds = (target - now).total_seconds()
-        print(f'[SETTLEMENT] Next auto-settlement at {target.strftime("%Y-%m-%d %H:%M")}'
+        print(f'[SETTLEMENT] Next at {target.strftime("%Y-%m-%d %H:%M")}'
               f' (in {int(wait_seconds // 3600)}h {int((wait_seconds % 3600) // 60)}m)')
         time.sleep(wait_seconds)
         run_settlement()
@@ -350,7 +363,6 @@ def settlement_scheduler():
 # ---------------------------------------------------------------------------
 
 if __name__ == '__main__':
-    # CLI overrides
     for i, arg in enumerate(sys.argv):
         if arg == '--dc-port' and i + 1 < len(sys.argv):
             DC_PORT = int(sys.argv[i + 1])
@@ -361,12 +373,12 @@ if __name__ == '__main__':
     print('  PAX S300 Payment Service')
     print('=' * 50)
     print(f'  HTTP listen:       0.0.0.0:{PAY_PORT}')
-    print(f'  DualConnector:     {DC_HOST}:{DC_PORT}')
+    print(f'  DualConnector:     http://{DC_HOST}:{DC_PORT}/')
+    print(f'  Protocol:          HTTP POST (XML fields)')
     print(f'  DC timeout:        {DC_TIMEOUT}s')
     print(f'  Auto-settlement:   {SETTLEMENT_TIME}')
     print('=' * 50)
 
-    # Start auto-settlement background thread
     settler = threading.Thread(target=settlement_scheduler, daemon=True)
     settler.start()
 
