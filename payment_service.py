@@ -124,7 +124,9 @@ def parse_response(xml_str):
 def is_success(fields):
     """Check if response indicates success."""
     code = fields.get(F_RESPONSE, '')
-    return code == '00'
+    message = fields.get(F_MESSAGE, '').upper()
+    # DC returns '00' or '1' for success, and message contains 'ОДОБРЕНО'
+    return code in ('00', '1') or 'ОДОБРЕН' in message
 
 
 # ---------------------------------------------------------------------------
