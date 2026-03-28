@@ -2,7 +2,8 @@
 lucide.createIcons();
 
 // === API Configuration ===
-var API_URL = '/api/categories'; // proxied via server.py to bypass CORS
+var LOCAL_SERVER = 'http://localhost:9999';
+var API_URL = LOCAL_SERVER + '/api/categories'; // proxied via server.py to bypass CORS
 var TERMINAL_NAME = 'term1';
 var TERMINAL_CODE = 'XRHxAIKHdBoDRujltXnc8H9C5ZBAwm4S';
 
