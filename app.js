@@ -985,12 +985,44 @@ document.addEventListener('click', function(e) {
   var dotsContainer = document.getElementById('banner-dots');
   if (!track || !dotsContainer) return;
 
+  // Generate slides from banner images
+  var bannerImages = [
+    'images/banner/kd_01.jpeg',
+    'images/banner/kd_02.jpg',
+    'images/banner/kd_03.jpg',
+    'images/banner/kd_04.webp',
+    'images/banner/mi_01.webp',
+    'images/banner/mi_02.webp',
+    'images/banner/mi_03.webp',
+    'images/banner/pa_01.jpeg',
+    'images/banner/pa_02.png',
+    'images/banner/pa_03.jpg',
+    'images/banner/pa_04.jpeg',
+    'images/banner/zp_01.jpg',
+    'images/banner/zp_02.jpg',
+    'images/banner/zp_03.jpg',
+    'images/banner/zp_04.jpg'
+  ];
+
+  track.innerHTML = '';
+  dotsContainer.innerHTML = '';
+  bannerImages.forEach(function(src, i) {
+    var slide = document.createElement('div');
+    slide.className = 'banner';
+    slide.innerHTML = '<div class="banner-bg" style="background-image:url(\'' + src + '\')"></div>';
+    track.appendChild(slide);
+
+    var dot = document.createElement('span');
+    dot.className = 'banner-dot' + (i === 0 ? ' active' : '');
+    dotsContainer.appendChild(dot);
+  });
+
   var slides = track.querySelectorAll('.banner');
   var dots = dotsContainer.querySelectorAll('.banner-dot');
   var current = 0;
   var total = slides.length;
   var autoInterval = null;
-  var AUTO_DELAY = 5000; // 5 seconds
+  var AUTO_DELAY = 5000;
 
   function goTo(index) {
     if (index < 0) index = total - 1;
