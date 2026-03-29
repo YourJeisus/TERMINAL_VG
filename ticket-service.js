@@ -198,7 +198,7 @@ const TicketService = {
   // --- Ticket Content (for #print-area, styles in styles.css @media print) ---
 
   generateTicketContent(ticket) {
-    var qrCode = ticket.number.replace(/-/g, '');
+    var qrCode = ticket.qrCode || ticket.number.replace(/-/g, '');
     var qrBigURL = this.generateQRDataURL(qrCode, 180);
     var price = this.formatPrice(ticket.totalPrice);
     var logoURL = getLogoURL();
@@ -346,8 +346,8 @@ const TicketService = {
     ctx.fillText('Для прохода - отсканируйте этот код:', W / 2, y + fontSize);
     y += Math.floor(36 * S);
 
-    // QR code — 160px in design
-    var qrCode = ticket.number.replace(/-/g, '');
+    // QR code — use Eskimos ticket_code if available
+    var qrCode = ticket.qrCode || ticket.number.replace(/-/g, '');
     var qrSize = Math.floor(160 * S);
     var qr = qrcode(0, 'L');
     qr.addData(qrCode);

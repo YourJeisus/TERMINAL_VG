@@ -81,6 +81,9 @@ function renderCategories(categories) {
         row.className = 'tkt-row';
         row.dataset.price = tariff.price;
         row.dataset.tariffId = tariff.id;
+        row.dataset.categoryId = cat.category_id;
+        row.dataset.dayType = tariff.day_type || '';
+        row.dataset.age = tariff.age || '';
         row.innerHTML =
           '<span class="tkt-pill">' + tariff.name + '</span>' +
           '<span class="tkt-price">' + formatPrice(parseInt(tariff.price)) + ' ₽</span>' +
@@ -437,7 +440,10 @@ function collectTicketItems(screenId) {
       const name = row.querySelector('.tkt-pill').textContent.trim();
       const price = parseInt(row.dataset.price);
       const tariffId = row.dataset.tariffId || null;
-      items.push({ name: name, price: price, qty: qty, tariffId: tariffId });
+      const categoryId = row.dataset.categoryId || null;
+      const dayType = row.dataset.dayType || '';
+      const age = row.dataset.age || '';
+      items.push({ name: name, price: price, qty: qty, tariffId: tariffId, categoryId: categoryId, dayType: dayType, age: age });
     }
   });
   // Combo counter (only on tickets screen)
@@ -683,44 +689,136 @@ function payFree() {
   }, 1500);
 }
 
-// Step 3: Complete payment — create individual tickets, show receipt modal
+// Step 3: Complete payment — register in Eskimos, create tickets, print
 var pendingTickets = [];
 var lastPaymentMethod = '';
+
+function generatePaymentCode() {
+  // UUID v4-like unique payment code
+  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+    var r = Math.random() * 16 | 0;
+    return (c === 'x' ? r : (r & 0x3 | 0x8)).toString(16);
+  });
+}
+
+function registerTicketsInEskimos(paymentCode, callback) {
+  // Build tickets array for Eskimos API
+  var tickets = [];
+  for (var i = 0; i < pendingCartItems.length; i++) {
+    var item = pendingCartItems[i];
+    for (var q = 0; q < item.qty; q++) {
+      tickets.push({
+        terminal_id: '1',
+        category_id: item.categoryId || '1',
+        type_id: item.tariffId || '1',
+        price: String(item.price),
+        day_type: item.dayType || 'weekday',
+        age: item.age || 'adult'
+      });
+    }
+  }
+
+  var requestBody = {
+    terminal_code: TERMINAL_CODE,
+    transaction: {
+      terminal_id: '1',
+      terminal_order_id: String(Date.now()),
+      terminal_payment_code: paymentCode,
+      sum: String(pendingCartTotal),
+      tickets: tickets
+    }
+  };
+
+  console.log('[ESKIMOS] Creating tickets:', JSON.stringify(requestBody));
+
+  var xhr = new XMLHttpRequest();
+  xhr.open('POST', LOCAL_SERVER + '/api/tickets/create', true);
+  xhr.setRequestHeader('Content-Type', 'application/json');
+  xhr.timeout = 15000;
+  xhr.onload = function() {
+    try {
+      var data = JSON.parse(xhr.responseText);
+      if (data.error) {
+        console.error('[ESKIMOS] Error:', data.message);
+        callback(null, data.message);
+      } else {
+        console.log('[ESKIMOS] Tickets created:', data);
+        // Extract ticket_codes from response
+        var ticketCodes = [];
+        if (data.transaction && data.transaction.tickets) {
+          data.transaction.tickets.forEach(function(t) {
+            if (t.ticket_code) ticketCodes.push(t.ticket_code);
+          });
+        }
+        callback(ticketCodes, null);
+      }
+    } catch (e) {
+      console.error('[ESKIMOS] Parse error:', e);
+      callback(null, 'Ошибка обработки ответа');
+    }
+  };
+  xhr.onerror = function() {
+    console.error('[ESKIMOS] Network error');
+    callback(null, 'Ошибка сети');
+  };
+  xhr.ontimeout = function() {
+    console.error('[ESKIMOS] Timeout');
+    callback(null, 'Таймаут сервера');
+  };
+  xhr.send(JSON.stringify(requestBody));
+}
 
 function completePayment(paymentMethod) {
   lastPaymentMethod = paymentMethod;
   pendingTickets = [];
 
-  // Create one ticket per item unit (e.g. qty=2 → 2 separate tickets)
-  try {
-    for (var i = 0; i < pendingCartItems.length; i++) {
-      var item = pendingCartItems[i];
-      for (var q = 0; q < item.qty; q++) {
-        var singleItem = [{ name: item.name, price: item.price, qty: 1 }];
-        var ticket = TicketService.createTicket(singleItem, item.price, paymentMethod);
-        pendingTickets.push(ticket);
-      }
-    }
-  } catch (e) {
-    console.error('Ticket creation failed:', e);
-    showAlert('Ошибка создания билета');
-    return;
-  }
-
-  // First show print loader, then navigate to success after printing
-  var printDone = false;
-  function onPrintFinished() {
-    if (printDone) return;
-    printDone = true;
-    hidePrintLoader();
-    navigateTo('success');
-    showReceiptInline();
-  }
+  var paymentCode = generatePaymentCode();
 
   showPrintLoader();
-  printAllTickets(onPrintFinished);
-  // Safety: if printing hangs, proceed after 8 seconds
-  setTimeout(onPrintFinished, 8000);
+
+  // Register tickets in Eskimos first, then create and print
+  registerTicketsInEskimos(paymentCode, function(ticketCodes, error) {
+    if (error) {
+      console.warn('[ESKIMOS] Registration failed, printing local tickets:', error);
+    }
+
+    // Create one ticket per item unit, using Eskimos ticket_codes for QR
+    try {
+      var codeIndex = 0;
+      for (var i = 0; i < pendingCartItems.length; i++) {
+        var item = pendingCartItems[i];
+        for (var q = 0; q < item.qty; q++) {
+          var singleItem = [{ name: item.name, price: item.price, qty: 1 }];
+          var ticket = TicketService.createTicket(singleItem, item.price, paymentMethod);
+          // Use Eskimos ticket_code for QR if available
+          if (ticketCodes && ticketCodes[codeIndex]) {
+            ticket.qrCode = ticketCodes[codeIndex];
+          }
+          codeIndex++;
+          pendingTickets.push(ticket);
+        }
+      }
+    } catch (e) {
+      console.error('Ticket creation failed:', e);
+      hidePrintLoader();
+      showAlert('Ошибка создания билета');
+      return;
+    }
+
+    // Print tickets, then show success screen
+    var printDone = false;
+    function onPrintFinished() {
+      if (printDone) return;
+      printDone = true;
+      hidePrintLoader();
+      navigateTo('success');
+      showReceiptInline();
+    }
+
+    printAllTickets(onPrintFinished);
+    // Safety: if printing hangs, proceed after 8 seconds
+    setTimeout(onPrintFinished, 8000);
+  });
 }
 
 // === Receipt (inline on success card) ===

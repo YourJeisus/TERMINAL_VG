@@ -102,6 +102,8 @@ class TerminalHandler(http.server.SimpleHTTPRequestHandler):
             self._handle_print()
         elif self.path == '/api/categories':
             self._handle_api_proxy()
+        elif self.path == '/api/tickets/create':
+            self._handle_tickets_proxy()
         else:
             self.send_error(404)
 
@@ -179,6 +181,39 @@ class TerminalHandler(http.server.SimpleHTTPRequestHandler):
                 'message': str(e)
             }).encode())
             print(f"[API PROXY] Error: {e}")
+
+    def _handle_tickets_proxy(self):
+        """Proxy POST to Eskimos ticket creation API."""
+        import urllib.request
+        try:
+            length = int(self.headers.get('Content-Length', 0))
+            body = self.rfile.read(length)
+
+            api_url = 'https://vgsport-admin.eskimos.ski/api/v1/tickets/terminal/create'
+            req = urllib.request.Request(
+                api_url,
+                data=body,
+                headers={'Content-Type': 'application/json'},
+                method='POST'
+            )
+            with urllib.request.urlopen(req, timeout=15) as resp:
+                resp_body = resp.read()
+
+            self.send_response(200)
+            self.send_header('Content-Type', 'application/json')
+            self.end_headers()
+            self.wfile.write(resp_body)
+            print(f"[TICKETS] Created OK, {len(resp_body)} bytes")
+
+        except Exception as e:
+            self.send_response(502)
+            self.send_header('Content-Type', 'application/json')
+            self.end_headers()
+            self.wfile.write(json.dumps({
+                'error': True,
+                'message': str(e)
+            }).encode())
+            print(f"[TICKETS] Error: {e}")
 
     def do_GET(self):
         if self.path == '/printer-status':
