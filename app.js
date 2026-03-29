@@ -636,16 +636,13 @@ function hidePaymentLoader() {
 }
 
 function cancelCardPayment() {
-  // Abort the pending fetch to DualConnector
+  // Abort the pending fetch — terminal will timeout on its own (45s)
   if (paymentAbortController) {
     paymentAbortController.abort();
     paymentAbortController = null;
   }
-  // Send cancel to DualConnector to interrupt terminal
-  try {
-    fetch('http://localhost:5050/api/cancel-current', { method: 'POST' }).catch(function() {});
-  } catch(e) {}
   paymentInProgress = false;
+  showAlert('Нажмите красную кнопку на терминале оплаты для отмены');
   if (paymentSourceScreen) {
     navigateTo(paymentSourceScreen);
   } else {
@@ -669,11 +666,11 @@ function payByCard() {
   var statusText = document.querySelector('.pay-status-text');
   if (statusText) statusText.textContent = 'Приложите карту или телефон к терминалу оплаты';
 
-  // AbortController for 130s timeout (DC timeout is 120s)
+  // AbortController for 50s timeout (DC timeout is 45s)
   paymentAbortController = new AbortController();
   var timeoutId = setTimeout(function() {
     paymentAbortController.abort();
-  }, 130000);
+  }, 50000);
 
   fetch('http://localhost:5050/api/pay', {
     method: 'POST',

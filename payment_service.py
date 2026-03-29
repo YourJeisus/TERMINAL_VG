@@ -31,7 +31,7 @@ from datetime import datetime, timedelta
 DC_HOST = os.environ.get('DC_HOST', '127.0.0.1')
 DC_PORT = int(os.environ.get('DC_PORT', '9015'))
 PAY_PORT = int(os.environ.get('PAY_PORT', '5050'))
-DC_TIMEOUT = 120
+DC_TIMEOUT = 45    # seconds — shorter for better UX (user can retry)
 SETTLEMENT_TIME = os.environ.get('SETTLEMENT_TIME', '23:55')
 
 # INPAS operation codes (field 25)
