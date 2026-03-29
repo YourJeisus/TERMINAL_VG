@@ -2176,6 +2176,35 @@ body {
   border: 1.5px solid rgba(255, 255, 255, 0.15);
 }
 
+/* === Eskimos Footer === */
+.eskimos-footer {
+  position: fixed;
+  bottom: 8px;
+  left: 0;
+  right: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  z-index: 10;
+  pointer-events: none;
+}
+
+.eskimos-footer-logo {
+  width: 20px;
+  height: 20px;
+  filter: invert(1);
+  opacity: 0.3;
+}
+
+.eskimos-footer-text {
+  font-family: 'Gotham', 'Inter', sans-serif;
+  font-size: 10px;
+  font-weight: 400;
+  color: rgba(255, 255, 255, 0.3);
+  letter-spacing: 0.05em;
+}
+
 /* === Print Loader === */
 .print-loader {
   position: fixed;
