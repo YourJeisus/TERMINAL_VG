@@ -540,25 +540,13 @@ function showPaymentLoader(text, options) {
   var cardView = document.getElementById('payment-loader-card');
   var genericView = document.getElementById('payment-loader-generic');
 
-  if (options && options.showQR) {
-    // Card payment mode: show amount + QR
+  if (options && options.showCard) {
+    // Card payment mode: show amount prominently
     if (cardView) cardView.style.display = '';
     if (genericView) genericView.style.display = 'none';
 
     var amountEl = document.getElementById('payment-loader-amount');
     if (amountEl) amountEl.textContent = formatPrice(options.amount || 0) + ' \u20BD';
-
-    // Generate QR with payment data
-    var qrCanvas = document.getElementById('payment-loader-qr');
-    if (qrCanvas && typeof TicketService !== 'undefined') {
-      var qrData = JSON.stringify({
-        terminal: 'VG-TERM1',
-        amount: options.amount,
-        order: options.orderId || '',
-        currency: 'RUB'
-      });
-      TicketService.renderQRToCanvas(qrCanvas, qrData, 220);
-    }
   } else {
     // Generic loader mode
     if (cardView) cardView.style.display = 'none';
@@ -581,9 +569,8 @@ function payByCard() {
   var orderId = 'VG-' + Date.now().toString(36).toUpperCase();
 
   showPaymentLoader('Приложите карту к терминалу...', {
-    showQR: true,
-    amount: pendingCartTotal,
-    orderId: orderId
+    showCard: true,
+    amount: pendingCartTotal
   });
 
   // AbortController for 130s timeout (DC timeout is 120s)

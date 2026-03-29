@@ -2085,19 +2085,6 @@ body {
   letter-spacing: 0.02em;
 }
 
-.payment-loader-qr-wrap {
-  background: #fff;
-  border-radius: 16px;
-  padding: 16px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.payment-loader-qr-wrap canvas {
-  display: block;
-}
-
 /* === Inactivity Modal === */
 .inactivity-modal {
   position: fixed;
