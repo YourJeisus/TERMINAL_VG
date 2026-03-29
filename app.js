@@ -635,21 +635,6 @@ function hidePaymentLoader() {
   if (loader) loader.classList.remove('active');
 }
 
-function cancelCardPayment() {
-  // Abort the pending fetch — terminal will timeout on its own (45s)
-  if (paymentAbortController) {
-    paymentAbortController.abort();
-    paymentAbortController = null;
-  }
-  paymentInProgress = false;
-  showAlert('Нажмите красную кнопку на терминале оплаты для отмены');
-  if (paymentSourceScreen) {
-    navigateTo(paymentSourceScreen);
-  } else {
-    navigateTo('main');
-  }
-  resetInactivityTimer();
-}
 
 // Step 2a: Pay by card (PAX S300 via INPAS DualConnector)
 function payByCard() {
@@ -697,12 +682,12 @@ function payByCard() {
     clearTimeout(timeoutId);
     paymentInProgress = false;
     if (err.name === 'AbortError') {
-      // User cancelled or timeout — already navigated away
+      showAlert('Время ожидания оплаты истекло');
     } else {
       console.error('[PAY] Error:', err);
       showAlert('Ошибка связи с терминалом оплаты');
-      goBackFromPayment();
     }
+    goBackFromPayment();
   });
 }
 
