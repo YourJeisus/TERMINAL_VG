@@ -14,6 +14,7 @@ Protocol (from kkmspb.ru debug dumps):
 
 import http.server
 import json
+import socketserver
 import threading
 import xml.etree.ElementTree as ET
 import os
@@ -160,11 +161,12 @@ class PaymentHandler(http.server.BaseHTTPRequestHandler):
     def do_POST(self):
         routes = {
             '/api/pay':        self._handle_pay,
-            '/api/cancel':     self._handle_cancel,
-            '/api/refund':     self._handle_refund,
-            '/api/status':     self._handle_status,
-            '/api/settlement': self._handle_settlement,
-            '/api/test':       self._handle_test,
+            '/api/cancel':         self._handle_cancel,
+            '/api/cancel-current': self._handle_cancel_current,
+            '/api/refund':         self._handle_refund,
+            '/api/status':         self._handle_status,
+            '/api/settlement':     self._handle_settlement,
+            '/api/test':           self._handle_test,
         }
         handler = routes.get(self.path)
         if handler:
@@ -222,6 +224,22 @@ class PaymentHandler(http.server.BaseHTTPRequestHandler):
                 'success': False, 'connected': False,
                 'error': str(e),
             })
+
+    # --- Cancel in-progress transaction ---
+
+    def _handle_cancel_current(self):
+        """POST /api/cancel-current — abort transaction waiting on terminal."""
+        try:
+            print('[CANCEL-CURRENT] Sending cancel to DualConnector...')
+            # Send a test/status request to interrupt the pending operation
+            xml_req = build_xml(OP_TEST, timeout_sec=5)
+            xml_resp = send_to_dc(xml_req, timeout=10)
+            fields = parse_response(xml_resp)
+            print(f'[CANCEL-CURRENT] Response: {fields.get(F_MESSAGE, "")}')
+            self._send_json(200, {'success': True, 'message': 'Cancel sent'})
+        except Exception as e:
+            print(f'[CANCEL-CURRENT] Error: {e}')
+            self._send_json(200, {'success': False, 'error': str(e)})
 
     # --- Payment endpoints ---
 
@@ -401,7 +419,10 @@ if __name__ == '__main__':
     settler = threading.Thread(target=settlement_scheduler, daemon=True)
     settler.start()
 
-    server = http.server.HTTPServer(('0.0.0.0', PAY_PORT), PaymentHandler)
+    class ThreadedHTTPServer(socketserver.ThreadingMixIn, http.server.HTTPServer):
+        daemon_threads = True
+
+    server = ThreadedHTTPServer(('0.0.0.0', PAY_PORT), PaymentHandler)
     try:
         server.serve_forever()
     except KeyboardInterrupt:

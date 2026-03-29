@@ -641,8 +641,11 @@ function cancelCardPayment() {
     paymentAbortController.abort();
     paymentAbortController = null;
   }
+  // Send cancel to DualConnector to interrupt terminal
+  try {
+    fetch('http://localhost:5050/api/cancel-current', { method: 'POST' }).catch(function() {});
+  } catch(e) {}
   paymentInProgress = false;
-  hidePaymentLoader();
   if (paymentSourceScreen) {
     navigateTo(paymentSourceScreen);
   } else {
@@ -662,10 +665,9 @@ function payByCard() {
   clearInterval(inactivityCountdownTimer);
   hideInactivityModal();
 
-  showPaymentLoader('Приложите карту к терминалу...', {
-    showCard: true,
-    amount: pendingCartTotal
-  });
+  // Update status text on payment screen
+  var statusText = document.querySelector('.pay-status-text');
+  if (statusText) statusText.textContent = 'Приложите карту или телефон к терминалу оплаты';
 
   // AbortController for 130s timeout (DC timeout is 120s)
   paymentAbortController = new AbortController();
@@ -683,7 +685,6 @@ function payByCard() {
   .then(function(data) {
     clearTimeout(timeoutId);
     paymentInProgress = false;
-    hidePaymentLoader();
     if (data.success) {
       lastPaymentRRN = data.rrn || '';
       lastPaymentAuthCode = data.authorization_code || '';
@@ -692,20 +693,19 @@ function payByCard() {
     } else {
       var errorMsg = data.message || data.error || 'Оплата отклонена';
       showAlert(errorMsg);
-      resetInactivityTimer();
+      goBackFromPayment();
     }
   })
   .catch(function(err) {
     clearTimeout(timeoutId);
     paymentInProgress = false;
-    hidePaymentLoader();
     if (err.name === 'AbortError') {
-      showAlert('Время ожидания оплаты истекло');
+      // User cancelled or timeout — already navigated away
     } else {
       console.error('[PAY] Error:', err);
       showAlert('Ошибка связи с терминалом оплаты');
+      goBackFromPayment();
     }
-    resetInactivityTimer();
   });
 }
 

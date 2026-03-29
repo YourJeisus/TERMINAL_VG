@@ -773,7 +773,6 @@
     <div class="screen" id="screen-payment" style="background:linear-gradient(rgba(0,0,0,0.85),rgba(0,0,0,0.85)),url('images/bg_terminal.png') center/cover no-repeat">
       <header class="header">
         <div class="header-left">
-          <button class="back-btn" onclick="goBackFromPayment()"><i data-lucide="arrow-left"></i></button>
           <img src="images/VG_logo_masked.svg" class="header-logo-img header-logo-img--sm" alt="Воробьёвы Горы">
         </div>
         <div class="header-right">
@@ -783,7 +782,7 @@
 
       <div class="pay-wrap">
         <div class="pay-card">
-          <h2 class="pay-title">Способ оплаты</h2>
+          <h2 class="pay-title">Оплата</h2>
           <p class="pay-amount">К оплате: <span id="pay-total-value">0 ₽</span></p>
 
           <!-- Ваш заказ -->
@@ -798,45 +797,13 @@
             </div>
           </div>
 
-          <div class="pay-methods">
-            <button class="pay-method" onclick="payByCard()">
-              <div class="pay-method-icon-wrap">
-                <i data-lucide="credit-card" class="pay-method-icon"></i>
-              </div>
-              <div class="pay-method-text">
-                <span class="pay-method-label">Оплатить</span>
-                <span class="pay-method-hint">Банковской картой или телефоном</span>
-              </div>
-              <i data-lucide="chevron-right" class="pay-method-chevron"></i>
-            </button>
-
-            <button class="pay-method" onclick="payFree()">
-              <div class="pay-method-icon-wrap">
-                <i data-lucide="lock-open" class="pay-method-icon"></i>
-              </div>
-              <div class="pay-method-text">
-                <span class="pay-method-label">Без оплаты</span>
-                <span class="pay-method-hint">Технический режим</span>
-              </div>
-              <i data-lucide="chevron-right" class="pay-method-chevron"></i>
-            </button>
+          <!-- Статус оплаты (вместо кнопок выбора) -->
+          <div class="pay-status" id="pay-status">
+            <div class="payment-spinner"></div>
+            <p class="pay-status-text">Приложите карту или телефон к терминалу оплаты</p>
           </div>
 
-          <button class="pay-back-btn" onclick="goBackFromPayment()">НАЗАД</button>
-        </div>
-      </div>
-
-      <!-- Лоадер оплаты -->
-      <div class="payment-loader" id="payment-loader">
-        <div class="payment-loader-content payment-loader-content--card" id="payment-loader-card">
-          <div class="payment-loader-amount" id="payment-loader-amount"></div>
-          <div class="payment-spinner"></div>
-          <p class="payment-loader-text">Приложите карту или телефон к терминалу оплаты</p>
-          <button class="payment-cancel-btn" onclick="cancelCardPayment()">ОТМЕНА</button>
-        </div>
-        <div class="payment-loader-content" id="payment-loader-generic" style="display:none">
-          <div class="payment-spinner"></div>
-          <p class="payment-loader-text">Обработка оплаты...</p>
+          <button class="pay-cancel-btn" onclick="cancelCardPayment()">ОТМЕНА</button>
         </div>
       </div>
     </div>
