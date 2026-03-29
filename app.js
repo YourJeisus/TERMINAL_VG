@@ -592,7 +592,8 @@ function processPayment() {
     });
   }
 
-  // Skip payment method selection — go directly to card payment
+  // Navigate to payment screen then immediately start card payment
+  navigateTo('payment');
   payByCard();
 }
 
