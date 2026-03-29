@@ -331,10 +331,33 @@ function updateClock() {
   const now = new Date();
   const time = now.toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
   document.querySelectorAll('.bottom-time').forEach(el => el.textContent = time);
+  var currentTimeEl = document.getElementById('current-time');
+  if (currentTimeEl) currentTimeEl.textContent = time;
 }
 
 updateClock();
 setInterval(updateClock, 30000);
+
+// === Weather (Open-Meteo, Воробьёвы горы) ===
+function updateWeather() {
+  var xhr = new XMLHttpRequest();
+  xhr.open('GET', 'https://api.open-meteo.com/v1/forecast?latitude=55.71&longitude=37.54&current=temperature_2m&timezone=Europe/Moscow', true);
+  xhr.timeout = 10000;
+  xhr.onload = function() {
+    try {
+      var data = JSON.parse(xhr.responseText);
+      var temp = Math.round(data.current.temperature_2m);
+      var sign = temp > 0 ? '+' : '';
+      var el = document.getElementById('weather-temp');
+      if (el) el.textContent = sign + temp + '°C';
+    } catch (e) { console.error('[WEATHER] Parse error:', e); }
+  };
+  xhr.onerror = function() { console.error('[WEATHER] Network error'); };
+  xhr.send();
+}
+
+updateWeather();
+setInterval(updateWeather, 600000); // обновлять каждые 10 минут
 
 // === Auto-return to splash after inactivity ===
 let inactivityTimer = null;
