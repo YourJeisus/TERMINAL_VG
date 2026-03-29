@@ -1478,7 +1478,7 @@ body {
 
 .tkt-pay-btn {
   width: 100%;
-  height: 72px;
+  height: 88px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1505,7 +1505,7 @@ body {
 
 .tkt-back-btn {
   width: 100%;
-  height: 56px;
+  height: 72px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -2085,6 +2085,26 @@ body {
   letter-spacing: 0.02em;
 }
 
+.payment-cancel-btn {
+  margin-top: 12px;
+  padding: 18px 64px;
+  border-radius: 100px;
+  border: 2px solid rgba(255, 255, 255, 0.25);
+  background: rgba(255, 255, 255, 0.08);
+  color: rgba(255, 255, 255, 0.7);
+  font-family: 'Gotham', 'Inter', sans-serif;
+  font-size: 18px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.payment-cancel-btn:active {
+  background: rgba(255, 255, 255, 0.2);
+  transform: scale(0.97);
+}
+
 /* === Inactivity Modal === */
 .inactivity-modal {
   position: fixed;
@@ -2605,7 +2625,7 @@ body {
 
 .pay-back-btn {
   width: 100%;
-  padding: 22px;
+  padding: 28px;
   border-radius: 100px;
   border: none;
   background: rgba(255,255,255,0.15);
@@ -2854,8 +2874,8 @@ body {
   .tkt-combo-badge { font-size: 12px; height: 28px; }
   .tkt-combo-counter .tkt-counter-btn { width: 40px; height: 40px; font-size: 22px; }
   .tkt-combo-counter-val { width: 40px; height: 40px; font-size: 18px; }
-  .tkt-pay-btn { height: 64px; font-size: 20px; }
-  .tkt-back-btn { height: 48px; font-size: 16px; }
+  .tkt-pay-btn { height: 80px; font-size: 22px; }
+  .tkt-back-btn { height: 64px; font-size: 18px; }
   .instructors-grid { grid-template-columns: repeat(2, 1fr); }
   .success-card { padding: 48px 24px; border-radius: 24px; gap: 24px; }
   .success-title { font-size: 26px; }

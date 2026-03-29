@@ -17,6 +17,14 @@ var CATEGORY_SCREEN_MAP = {
 
 var loadedCategories = [];
 
+// Banner images per category screen (prefix-based)
+var SCREEN_BANNERS = {
+  'tickets':  ['images/banner/kd_01.jpeg','images/banner/kd_02.jpg','images/banner/kd_03.jpg','images/banner/kd_04.webp'],
+  'alpaka':   ['images/banner/pa_01.jpeg','images/banner/pa_02.png','images/banner/pa_03.jpg','images/banner/pa_04.jpeg'],
+  'museum':   ['images/banner/mi_01.webp','images/banner/mi_02.webp','images/banner/mi_03.webp'],
+  'skypark':  ['images/banner/zp_01.jpg','images/banner/zp_02.jpg','images/banner/zp_03.jpg','images/banner/zp_04.jpg']
+};
+
 function loadCategories() {
   var xhr = new XMLHttpRequest();
   xhr.open('POST', API_URL, true);
@@ -58,15 +66,19 @@ function renderCategories(categories) {
     var descEl = screen.querySelector('.tkt-description p');
     if (descEl && cat.category_description) descEl.textContent = cat.category_description;
 
-    // Update carousel photo if provided
-    if (cat.category_photo) {
+    // Populate carousel from SCREEN_BANNERS
+    var banners = SCREEN_BANNERS[screenKey];
+    if (banners && banners.length > 0) {
       var track = screen.querySelector('.tkt-carousel-track');
       if (track) {
-        var img = document.createElement('img');
-        img.src = cat.category_photo;
-        img.alt = cat.category_name;
-        img.className = 'tkt-carousel-slide';
-        track.appendChild(img);
+        track.innerHTML = '';
+        banners.forEach(function(src) {
+          var img = document.createElement('img');
+          img.src = src;
+          img.alt = cat.category_name;
+          img.className = 'tkt-carousel-slide';
+          track.appendChild(img);
+        });
       }
     }
 
@@ -98,6 +110,8 @@ function renderCategories(categories) {
   });
 
   lucide.createIcons();
+  // Re-init carousels after images are replaced
+  initTicketCarousels();
 }
 
 // Load categories on startup
@@ -294,37 +308,42 @@ function formatPrice(n) {
   return n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
 }
 
-// === Ticket Carousels ===
-document.querySelectorAll('[data-carousel]').forEach(function(carousel) {
-  var track = carousel.querySelector('.tkt-carousel-track');
-  var dotsWrap = carousel.querySelector('.tkt-carousel-dots');
-  var slides = carousel.querySelectorAll('.tkt-carousel-slide');
-  if (!track || !dotsWrap || slides.length === 0) return;
+// === Ticket Carousels (with auto-rotation) ===
+function initTicketCarousels() {
+  document.querySelectorAll('[data-carousel]').forEach(function(carousel) {
+    var track = carousel.querySelector('.tkt-carousel-track');
+    var dotsWrap = carousel.querySelector('.tkt-carousel-dots');
+    if (!track || !dotsWrap) return;
+    var slides = track.querySelectorAll('.tkt-carousel-slide');
+    if (slides.length === 0) return;
 
-  // Generate dots
-  slides.forEach(function(_, i) {
-    var dot = document.createElement('button');
-    dot.className = 'tkt-carousel-dot' + (i === 0 ? ' active' : '');
-    dot.onclick = function() {
-      slides[i].scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'start' });
-    };
-    dotsWrap.appendChild(dot);
-  });
-
-  // Hide dots if single slide
-  if (slides.length <= 1) dotsWrap.style.display = 'none';
-
-  // Track scroll position
-  var dots = dotsWrap.querySelectorAll('.tkt-carousel-dot');
-  track.addEventListener('scroll', function() {
-    var scrollLeft = track.scrollLeft;
-    var width = track.offsetWidth;
-    var idx = Math.round(scrollLeft / width);
-    dots.forEach(function(d, i) {
-      d.classList.toggle('active', i === idx);
+    dotsWrap.innerHTML = '';
+    slides.forEach(function(_, i) {
+      var dot = document.createElement('button');
+      dot.className = 'tkt-carousel-dot' + (i === 0 ? ' active' : '');
+      dot.onclick = function() {
+        slides[i].scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'start' });
+      };
+      dotsWrap.appendChild(dot);
     });
+
+    if (slides.length <= 1) { dotsWrap.style.display = 'none'; return; }
+
+    var dots = dotsWrap.querySelectorAll('.tkt-carousel-dot');
+    track.addEventListener('scroll', function() {
+      var idx = Math.round(track.scrollLeft / track.offsetWidth);
+      dots.forEach(function(d, i) { d.classList.toggle('active', i === idx); });
+    });
+
+    // Auto-rotate every 10 seconds
+    var autoIdx = 0;
+    setInterval(function() {
+      autoIdx = (autoIdx + 1) % slides.length;
+      slides[autoIdx].scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'start' });
+    }, 10000);
   });
-});
+}
+initTicketCarousels();
 
 // === Clock ===
 function updateClock() {
@@ -593,6 +612,22 @@ function showPaymentLoader(text, options) {
 function hidePaymentLoader() {
   var loader = document.getElementById('payment-loader');
   if (loader) loader.classList.remove('active');
+}
+
+function cancelCardPayment() {
+  // Abort the pending fetch to DualConnector
+  if (paymentAbortController) {
+    paymentAbortController.abort();
+    paymentAbortController = null;
+  }
+  paymentInProgress = false;
+  hidePaymentLoader();
+  if (paymentSourceScreen) {
+    navigateTo(paymentSourceScreen);
+  } else {
+    navigateTo('main');
+  }
+  resetInactivityTimer();
 }
 
 // Step 2a: Pay by card (PAX S300 via INPAS DualConnector)
