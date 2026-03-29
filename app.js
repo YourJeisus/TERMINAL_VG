@@ -339,12 +339,15 @@ let inactivityCountdownTimer = null;
 const INACTIVITY_TIMEOUT = 20000; // 20 seconds before warning
 const INACTIVITY_COUNTDOWN = 10;  // 10 second countdown in modal
 
+let paymentInProgress = false;
+
 function resetInactivityTimer() {
   clearTimeout(inactivityTimer);
   clearInterval(inactivityCountdownTimer);
   hideInactivityModal();
   var splashEl = document.getElementById('screen-splash');
   if (splashEl && splashEl.classList.contains('active')) return;
+  if (paymentInProgress) return;
   inactivityTimer = setTimeout(showInactivityModal, INACTIVITY_TIMEOUT);
 }
 
@@ -521,8 +524,8 @@ function processPayment() {
     });
   }
 
-  navigateTo('payment');
-  lucide.createIcons();
+  // Skip payment method selection — go directly to card payment
+  payByCard();
 }
 
 // Back from payment method screen
@@ -568,6 +571,12 @@ function payByCard() {
   var amountKopecks = pendingCartTotal * 100;
   var orderId = 'VG-' + Date.now().toString(36).toUpperCase();
 
+  // Pause inactivity timer during payment
+  paymentInProgress = true;
+  clearTimeout(inactivityTimer);
+  clearInterval(inactivityCountdownTimer);
+  hideInactivityModal();
+
   showPaymentLoader('Приложите карту к терминалу...', {
     showCard: true,
     amount: pendingCartTotal
@@ -588,6 +597,7 @@ function payByCard() {
   .then(function(response) { return response.json(); })
   .then(function(data) {
     clearTimeout(timeoutId);
+    paymentInProgress = false;
     hidePaymentLoader();
     if (data.success) {
       lastPaymentRRN = data.rrn || '';
@@ -597,10 +607,12 @@ function payByCard() {
     } else {
       var errorMsg = data.message || data.error || 'Оплата отклонена';
       showAlert(errorMsg);
+      resetInactivityTimer();
     }
   })
   .catch(function(err) {
     clearTimeout(timeoutId);
+    paymentInProgress = false;
     hidePaymentLoader();
     if (err.name === 'AbortError') {
       showAlert('Время ожидания оплаты истекло');
@@ -608,6 +620,7 @@ function payByCard() {
       console.error('[PAY] Error:', err);
       showAlert('Ошибка связи с терминалом оплаты');
     }
+    resetInactivityTimer();
   });
 }
 
