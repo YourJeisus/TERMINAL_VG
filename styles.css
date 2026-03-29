@@ -1478,14 +1478,14 @@ body {
 
 .tkt-pay-btn {
   width: 100%;
-  height: 88px;
+  height: 100px;
   display: flex;
   align-items: center;
   justify-content: center;
   background: linear-gradient(to right, #6AAFE6, #5090D0);
   color: #FFFFFF;
   font-family: 'Gotham', 'Inter', sans-serif;
-  font-size: 22px;
+  font-size: 26px;
   font-weight: 800;
   letter-spacing: 2px;
   border: none;
@@ -1505,14 +1505,14 @@ body {
 
 .tkt-back-btn {
   width: 100%;
-  height: 72px;
+  height: 84px;
   display: flex;
   align-items: center;
   justify-content: center;
   background: rgba(255,255,255,0.08);
   color: #999999;
   font-family: 'Gotham', 'Inter', sans-serif;
-  font-size: 18px;
+  font-size: 22px;
   font-weight: 700;
   letter-spacing: 2px;
   border: 1.5px solid rgba(255,255,255,0.15);
@@ -2874,8 +2874,8 @@ body {
   .tkt-combo-badge { font-size: 12px; height: 28px; }
   .tkt-combo-counter .tkt-counter-btn { width: 40px; height: 40px; font-size: 22px; }
   .tkt-combo-counter-val { width: 40px; height: 40px; font-size: 18px; }
-  .tkt-pay-btn { height: 80px; font-size: 22px; }
-  .tkt-back-btn { height: 64px; font-size: 18px; }
+  .tkt-pay-btn { height: 88px; font-size: 22px; }
+  .tkt-back-btn { height: 72px; font-size: 18px; }
   .instructors-grid { grid-template-columns: repeat(2, 1fr); }
   .success-card { padding: 48px 24px; border-radius: 24px; gap: 24px; }
   .success-title { font-size: 26px; }

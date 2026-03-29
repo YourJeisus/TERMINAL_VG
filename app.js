@@ -66,22 +66,6 @@ function renderCategories(categories) {
     var descEl = screen.querySelector('.tkt-description p');
     if (descEl && cat.category_description) descEl.textContent = cat.category_description;
 
-    // Populate carousel from SCREEN_BANNERS
-    var banners = SCREEN_BANNERS[screenKey];
-    if (banners && banners.length > 0) {
-      var track = screen.querySelector('.tkt-carousel-track');
-      if (track) {
-        track.innerHTML = '';
-        banners.forEach(function(src) {
-          var img = document.createElement('img');
-          img.src = src;
-          img.alt = cat.category_name;
-          img.className = 'tkt-carousel-slide';
-          track.appendChild(img);
-        });
-      }
-    }
-
     // Render tariffs
     if (cat.category_tariffs && cat.category_tariffs.length > 0) {
       var rowsContainer = screen.querySelector('.tkt-rows');
@@ -110,11 +94,29 @@ function renderCategories(categories) {
   });
 
   lucide.createIcons();
-  // Re-init carousels after images are replaced
-  initTicketCarousels();
 }
 
-// Load categories on startup
+// Populate ticket screen carousels from SCREEN_BANNERS (runs immediately, no API needed)
+function populateScreenBanners() {
+  Object.keys(SCREEN_BANNERS).forEach(function(screenKey) {
+    var screenId = 'screen-' + screenKey;
+    var screen = document.getElementById(screenId);
+    if (!screen) return;
+    var track = screen.querySelector('.tkt-carousel-track');
+    if (!track) return;
+    var banners = SCREEN_BANNERS[screenKey];
+    track.innerHTML = '';
+    banners.forEach(function(src) {
+      var img = document.createElement('img');
+      img.src = src;
+      img.alt = screenKey;
+      img.className = 'tkt-carousel-slide';
+      track.appendChild(img);
+    });
+  });
+  initTicketCarousels();
+}
+// Load categories on startup (banners populated later after all code is defined)
 loadCategories();
 
 // === Navigation ===
@@ -309,7 +311,13 @@ function formatPrice(n) {
 }
 
 // === Ticket Carousels (with auto-rotation) ===
+var tktCarouselTimers = [];
+
 function initTicketCarousels() {
+  // Clear previous timers
+  tktCarouselTimers.forEach(function(t) { clearInterval(t); });
+  tktCarouselTimers = [];
+
   document.querySelectorAll('[data-carousel]').forEach(function(carousel) {
     var track = carousel.querySelector('.tkt-carousel-track');
     var dotsWrap = carousel.querySelector('.tkt-carousel-dots');
@@ -318,32 +326,44 @@ function initTicketCarousels() {
     if (slides.length === 0) return;
 
     dotsWrap.innerHTML = '';
+    var current = 0;
+
+    function goTo(idx) {
+      current = idx;
+      track.scrollTo({ left: idx * track.offsetWidth, behavior: 'smooth' });
+      var allDots = dotsWrap.querySelectorAll('.tkt-carousel-dot');
+      allDots.forEach(function(d, i) { d.classList.toggle('active', i === idx); });
+    }
+
     slides.forEach(function(_, i) {
       var dot = document.createElement('button');
       dot.className = 'tkt-carousel-dot' + (i === 0 ? ' active' : '');
-      dot.onclick = function() {
-        slides[i].scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'start' });
-      };
+      dot.onclick = function() { goTo(i); };
       dotsWrap.appendChild(dot);
     });
 
     if (slides.length <= 1) { dotsWrap.style.display = 'none'; return; }
+    dotsWrap.style.display = '';
 
-    var dots = dotsWrap.querySelectorAll('.tkt-carousel-dot');
+    // Sync dots on manual scroll
     track.addEventListener('scroll', function() {
       var idx = Math.round(track.scrollLeft / track.offsetWidth);
-      dots.forEach(function(d, i) { d.classList.toggle('active', i === idx); });
+      if (idx !== current) {
+        current = idx;
+        var allDots = dotsWrap.querySelectorAll('.tkt-carousel-dot');
+        allDots.forEach(function(d, i) { d.classList.toggle('active', i === idx); });
+      }
     });
 
     // Auto-rotate every 10 seconds
-    var autoIdx = 0;
-    setInterval(function() {
-      autoIdx = (autoIdx + 1) % slides.length;
-      slides[autoIdx].scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'start' });
+    var timer = setInterval(function() {
+      var next = (current + 1) % slides.length;
+      goTo(next);
     }, 10000);
+    tktCarouselTimers.push(timer);
   });
 }
-initTicketCarousels();
+populateScreenBanners();
 
 // === Clock ===
 function updateClock() {
