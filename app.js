@@ -535,10 +535,38 @@ function goBackFromPayment() {
   }
 }
 
-function showPaymentLoader(text) {
+function showPaymentLoader(text, options) {
   var loader = document.getElementById('payment-loader');
-  var loaderText = loader ? loader.querySelector('.payment-loader-text') : null;
-  if (loaderText) loaderText.textContent = text || 'Обработка оплаты...';
+  var cardView = document.getElementById('payment-loader-card');
+  var genericView = document.getElementById('payment-loader-generic');
+
+  if (options && options.showQR) {
+    // Card payment mode: show amount + QR
+    if (cardView) cardView.style.display = '';
+    if (genericView) genericView.style.display = 'none';
+
+    var amountEl = document.getElementById('payment-loader-amount');
+    if (amountEl) amountEl.textContent = formatPrice(options.amount || 0) + ' \u20BD';
+
+    // Generate QR with payment data
+    var qrCanvas = document.getElementById('payment-loader-qr');
+    if (qrCanvas && typeof TicketService !== 'undefined') {
+      var qrData = JSON.stringify({
+        terminal: 'VG-TERM1',
+        amount: options.amount,
+        order: options.orderId || '',
+        currency: 'RUB'
+      });
+      TicketService.renderQRToCanvas(qrCanvas, qrData, 220);
+    }
+  } else {
+    // Generic loader mode
+    if (cardView) cardView.style.display = 'none';
+    if (genericView) genericView.style.display = '';
+    var loaderText = genericView ? genericView.querySelector('.payment-loader-text') : null;
+    if (loaderText) loaderText.textContent = text || 'Обработка оплаты...';
+  }
+
   if (loader) loader.classList.add('active');
 }
 
@@ -552,7 +580,11 @@ function payByCard() {
   var amountKopecks = pendingCartTotal * 100;
   var orderId = 'VG-' + Date.now().toString(36).toUpperCase();
 
-  showPaymentLoader('Приложите карту к терминалу...');
+  showPaymentLoader('Приложите карту к терминалу...', {
+    showQR: true,
+    amount: pendingCartTotal,
+    orderId: orderId
+  });
 
   // AbortController for 130s timeout (DC timeout is 120s)
   paymentAbortController = new AbortController();

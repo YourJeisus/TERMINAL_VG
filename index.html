@@ -865,19 +865,8 @@
                 <i data-lucide="credit-card" class="pay-method-icon"></i>
               </div>
               <div class="pay-method-text">
-                <span class="pay-method-label">Банковской картой</span>
-                <span class="pay-method-hint">Приложите карту к терминалу</span>
-              </div>
-              <i data-lucide="chevron-right" class="pay-method-chevron"></i>
-            </button>
-
-            <button class="pay-method" onclick="payBySBP()">
-              <div class="pay-method-icon-wrap">
-                <i data-lucide="smartphone" class="pay-method-icon"></i>
-              </div>
-              <div class="pay-method-text">
-                <span class="pay-method-label">СБП</span>
-                <span class="pay-method-hint">Оплата по QR-коду</span>
+                <span class="pay-method-label">Оплатить</span>
+                <span class="pay-method-hint">Банковской картой или телефоном</span>
               </div>
               <i data-lucide="chevron-right" class="pay-method-chevron"></i>
             </button>
@@ -900,7 +889,15 @@
 
       <!-- Лоадер оплаты -->
       <div class="payment-loader" id="payment-loader">
-        <div class="payment-loader-content">
+        <div class="payment-loader-content payment-loader-content--card" id="payment-loader-card">
+          <div class="payment-loader-amount" id="payment-loader-amount"></div>
+          <div class="payment-loader-qr-wrap">
+            <canvas id="payment-loader-qr" width="220" height="220"></canvas>
+          </div>
+          <div class="payment-spinner"></div>
+          <p class="payment-loader-text">Приложите карту к терминалу</p>
+        </div>
+        <div class="payment-loader-content" id="payment-loader-generic" style="display:none">
           <div class="payment-spinner"></div>
           <p class="payment-loader-text">Обработка оплаты...</p>
         </div>

@@ -2077,6 +2077,27 @@ body {
   font-weight: 500;
 }
 
+.payment-loader-amount {
+  font-family: 'Gotham', 'Inter', sans-serif;
+  font-size: 36px;
+  font-weight: 700;
+  color: #fff;
+  letter-spacing: 0.02em;
+}
+
+.payment-loader-qr-wrap {
+  background: #fff;
+  border-radius: 16px;
+  padding: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.payment-loader-qr-wrap canvas {
+  display: block;
+}
+
 /* === Inactivity Modal === */
 .inactivity-modal {
   position: fixed;
