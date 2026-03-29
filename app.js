@@ -707,21 +707,20 @@ function completePayment(paymentMethod) {
     return;
   }
 
-  // Show success screen, print tickets, then ask about email receipt
-  navigateTo('success');
-
+  // First show print loader, then navigate to success after printing
   var printDone = false;
   function onPrintFinished() {
     if (printDone) return;
     printDone = true;
     hidePrintLoader();
+    navigateTo('success');
     showReceiptInline();
   }
 
   showPrintLoader();
   printAllTickets(onPrintFinished);
-  // Safety: if printing hangs, proceed after 6 seconds
-  setTimeout(onPrintFinished, 6000);
+  // Safety: if printing hangs, proceed after 8 seconds
+  setTimeout(onPrintFinished, 8000);
 }
 
 // === Receipt (inline on success card) ===
