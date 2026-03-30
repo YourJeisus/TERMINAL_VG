@@ -514,19 +514,21 @@ function initTicketCarousels() {
 populateScreenBanners();
 
 
-// === Date display (localized) ===
+// === Date & time display (localized) ===
 var DATE_LOCALES = { ru: 'ru-RU', en: 'en-US', ar: 'ar-SA', zh: 'zh-CN' };
-function updateDate() {
+function updateDateTime() {
   var now = new Date();
   var lang = (window.i18n ? i18n.getCurrentLang() : 'ru');
   var locale = DATE_LOCALES[lang] || 'ru-RU';
   var dateEl = document.getElementById('current-date');
   var weekdayEl = document.getElementById('current-weekday');
+  var timeEl = document.getElementById('current-time');
   if (dateEl) dateEl.textContent = now.toLocaleDateString(locale, { day: 'numeric', month: 'short' });
   if (weekdayEl) weekdayEl.textContent = now.toLocaleDateString(locale, { weekday: 'long' });
+  if (timeEl) timeEl.textContent = now.toLocaleTimeString(locale, { hour: '2-digit', minute: '2-digit' });
 }
-updateDate();
-setInterval(updateDate, 60000);
+updateDateTime();
+setInterval(updateDateTime, 10000);
 
 // === Weather (Open-Meteo, Воробьёвы горы) ===
 function updateWeather() {

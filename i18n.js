@@ -100,8 +100,8 @@
       if (window.loadedCategories && window.translateApiContent) {
         translateApiContent(loadedCategories);
       }
-      // Update localized date
-      if (window.updateDate) updateDate();
+      // Update localized date & time
+      if (window.updateDateTime) updateDateTime();
     });
   }
 

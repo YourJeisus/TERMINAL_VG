@@ -37,7 +37,7 @@
     "_context": "主页信息卡片：天气、当前游客、营业时间",
     "weather": "天气",
     "visitors": "当前",
-    "hours": "营业时间"
+    "time": "时间"
   },
 
   "scan": {
