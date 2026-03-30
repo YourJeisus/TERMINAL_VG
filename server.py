@@ -7,6 +7,31 @@ import io
 import sys
 import os
 
+# --- Load .env file ---
+def load_env(path='.env'):
+    """Load key=value pairs from .env file into os.environ."""
+    env_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), path)
+    if not os.path.exists(env_path):
+        print(f"[ENV] Warning: {env_path} not found, using environment variables")
+        return
+    with open(env_path, 'r') as f:
+        for line in f:
+            line = line.strip()
+            if not line or line.startswith('#'):
+                continue
+            key, _, value = line.partition('=')
+            os.environ.setdefault(key.strip(), value.strip())
+    print(f"[ENV] Loaded from {env_path}")
+
+load_env()
+
+TERMINAL_NAME = os.environ.get('TERMINAL_NAME', 'term1')
+TERMINAL_CODE = os.environ.get('TERMINAL_CODE', '')
+TERMINAL_ID = os.environ.get('TERMINAL_ID', '1')
+
+if not TERMINAL_CODE:
+    print("[ENV] WARNING: TERMINAL_CODE is empty! Set it in .env file")
+
 # --- Printer setup (Windows GDI, like PhotoBudka) ---
 
 PRINTER = None
@@ -147,19 +172,26 @@ class TerminalHandler(http.server.SimpleHTTPRequestHandler):
             }).encode())
 
     def _handle_api_proxy(self):
-        """Proxy POST to external ticket API (bypasses CORS)."""
+        """Proxy POST to external ticket API — injects credentials from .env."""
         import urllib.request
         try:
+            # Ignore frontend body — build request with server-side credentials
             length = int(self.headers.get('Content-Length', 0))
-            body = self.rfile.read(length)
+            if length > 0:
+                self.rfile.read(length)  # drain
+
+            payload = json.dumps({
+                'terminal_name': TERMINAL_NAME,
+                'terminal_code': TERMINAL_CODE
+            }).encode()
 
             api_url = 'https://vgsport-admin.eskimos.ski/api/v1/tickets/terminal/categories'
             req = urllib.request.Request(
                 api_url,
-                data=body,
+                data=payload,
                 headers={
                     'Content-Type': 'application/json',
-                    'Cookie': 'terminal_id=1'
+                    'Cookie': f'terminal_id={TERMINAL_ID}'
                 },
                 method='POST'
             )
@@ -183,16 +215,24 @@ class TerminalHandler(http.server.SimpleHTTPRequestHandler):
             print(f"[API PROXY] Error: {e}")
 
     def _handle_tickets_proxy(self):
-        """Proxy POST to Eskimos ticket creation API."""
+        """Proxy POST to Eskimos ticket creation API — injects terminal_code from .env."""
         import urllib.request
         try:
             length = int(self.headers.get('Content-Length', 0))
             body = self.rfile.read(length)
+            data = json.loads(body) if body else {}
+
+            # Inject server-side credentials (overwrite anything from frontend)
+            data['terminal_code'] = TERMINAL_CODE
+            if 'transaction' in data:
+                data['transaction']['terminal_id'] = TERMINAL_ID
+
+            payload = json.dumps(data).encode()
 
             api_url = 'https://vgsport-admin.eskimos.ski/api/v1/tickets/terminal/create'
             req = urllib.request.Request(
                 api_url,
-                data=body,
+                data=payload,
                 headers={'Content-Type': 'application/json'},
                 method='POST'
             )

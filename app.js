@@ -3,9 +3,7 @@ lucide.createIcons();
 
 // === API Configuration ===
 var LOCAL_SERVER = 'http://localhost:9999';
-var API_URL = LOCAL_SERVER + '/api/categories'; // proxied via server.py to bypass CORS
-var TERMINAL_NAME = 'term1';
-var TERMINAL_CODE = 'XRHxAIKHdBoDRujltXnc8H9C5ZBAwm4S';
+var API_URL = LOCAL_SERVER + '/api/categories'; // proxied via server.py (credentials injected server-side)
 
 // Map API category_id → screen key
 var CATEGORY_SCREEN_MAP = {
@@ -112,10 +110,7 @@ function loadCategories() {
   };
   xhr.onerror = function() { console.error('[API] Network error'); };
   xhr.ontimeout = function() { console.error('[API] Timeout'); };
-  xhr.send(JSON.stringify({
-    terminal_name: TERMINAL_NAME,
-    terminal_code: TERMINAL_CODE
-  }));
+  xhr.send('{}'); // credentials injected by server.py
 }
 
 function renderCategories(categories) {
@@ -959,9 +954,8 @@ function registerTicketsInEskimos(paymentCode, callback) {
   }
 
   var requestBody = {
-    terminal_code: TERMINAL_CODE,
+    // terminal_code injected by server.py from .env
     transaction: {
-      terminal_id: '1',
       terminal_order_id: Date.now() + '-' + Math.random().toString(36).slice(2, 8),
       terminal_payment_code: paymentCode,
       sum: String(pendingCartTotal),
