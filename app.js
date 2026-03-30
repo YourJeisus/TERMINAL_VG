@@ -962,7 +962,7 @@ function registerTicketsInEskimos(paymentCode, callback) {
     terminal_code: TERMINAL_CODE,
     transaction: {
       terminal_id: '1',
-      terminal_order_id: String(Date.now()),
+      terminal_order_id: Date.now() + '-' + Math.random().toString(36).slice(2, 8),
       terminal_payment_code: paymentCode,
       sum: String(pendingCartTotal),
       tickets: tickets
