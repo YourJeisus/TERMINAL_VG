@@ -232,7 +232,8 @@ body {
 }
 
 .bottom-eskimos-text {
-  font-weight: 500;
+  font-family: 'Gotham', 'Inter', sans-serif;
+  font-weight: 400;
   color: var(--text-light);
 }
 
@@ -418,6 +419,11 @@ body {
   width: 130px;
   height: 130px;
   color: rgba(255,255,255,0.85);
+}
+
+.splash-eskimos {
+  font-family: 'Gotham', 'Inter', sans-serif;
+  font-weight: 400;
 }
 
 .splash-eskimos-logo {
