@@ -39,7 +39,7 @@ start /b "" python payment_service.py
 timeout /t 2 /nobreak >nul
 
 echo [7/7] Launching Chrome kiosk...
-start "" "C:\Program Files\Google\Chrome\Application\chrome.exe" --user-data-dir="C:\TerminalVG" --kiosk --kiosk-printing --disable-session-crashed-bubble --noerrdialogs --disable-infobars --disable-features=TranslateUI --disable-background-mode --disable-pinch --overscroll-history-navigation=0 https://terminal-vg.vercel.app
+start "" "C:\Program Files\Google\Chrome\Application\chrome.exe" --user-data-dir="C:\TerminalVG" --kiosk --kiosk-printing --disable-session-crashed-bubble --noerrdialogs --disable-infobars --disable-features=TranslateUI --disable-background-mode --disable-pinch --overscroll-history-navigation=0 http://localhost:9999
 
 echo.
 echo === Terminal started ===
