@@ -195,9 +195,10 @@ function renderCategories(categories) {
 
   lucide.createIcons();
   // Re-apply translations after dynamic content is rendered
-  if (window.i18n) i18n.applyTranslations();
-  // Auto-translate API content (names, descriptions, tariffs) if not Russian
-  translateApiContent(categories);
+  if (window.i18n) {
+    i18n.applyTranslations();
+    translateApiContent(categories);
+  }
 }
 
 function translateApiContent(categories) {
@@ -300,6 +301,11 @@ function navigateTo(screenName) {
   if (screenName === 'museum') resetScreen('screen-museum', 'museum-total');
   if (screenName === 'skypark') resetScreen('screen-skypark', 'skypark-total');
   if (screenName === 'rental') resetRental();
+
+  // Reset language to Russian when returning to splash
+  if (screenName === 'splash' && window.i18n && i18n.getCurrentLang() !== 'ru') {
+    setLanguage('ru');
+  }
 }
 
 function resetTickets() {

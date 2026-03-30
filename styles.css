@@ -190,6 +190,14 @@ body {
 [dir="rtl"] .bottom-bar { flex-direction: row-reverse; }
 [dir="rtl"] .tkt-row { flex-direction: row-reverse; }
 [dir="rtl"] .success-receipt-back { direction: ltr; }
+/* Prevent RTL from breaking carousels and visual layouts */
+[dir="rtl"] .banner-carousel,
+[dir="rtl"] .banner-track,
+[dir="rtl"] .tkt-carousel,
+[dir="rtl"] .tkt-carousel-track,
+[dir="rtl"] .ent-grid,
+[dir="rtl"] .info-cards-fixed,
+[dir="rtl"] .vkb { direction: ltr; }
 
 .back-btn {
   display: none;
