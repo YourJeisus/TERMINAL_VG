@@ -36,7 +36,6 @@
   "info": {
     "_context": "Info cards on the main screen: weather, visitor count, opening hours",
     "weather": "Weather",
-    "visitors": "Now",
     "hours": "Opening hours"
   },
 

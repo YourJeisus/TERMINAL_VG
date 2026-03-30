@@ -151,10 +151,6 @@ function renderCategories(categories) {
       filteredTariffs = tariffs.filter(function(t) {
         return t.day_type === todayType;
       });
-      if (filteredTariffs.length === 0) {
-        filteredTariffs = tariffs;
-        console.warn('[API] No tariffs match today day_type "' + todayType + '" for category ' + cat.category_id + ', showing all');
-      }
     }
 
     if (filteredTariffs.length === 0) {
@@ -517,6 +513,20 @@ function initTicketCarousels() {
 }
 populateScreenBanners();
 
+
+// === Date display (localized) ===
+var DATE_LOCALES = { ru: 'ru-RU', en: 'en-US', ar: 'ar-SA', zh: 'zh-CN' };
+function updateDate() {
+  var now = new Date();
+  var lang = (window.i18n ? i18n.getCurrentLang() : 'ru');
+  var locale = DATE_LOCALES[lang] || 'ru-RU';
+  var dateEl = document.getElementById('current-date');
+  var weekdayEl = document.getElementById('current-weekday');
+  if (dateEl) dateEl.textContent = now.toLocaleDateString(locale, { day: 'numeric', month: 'short' });
+  if (weekdayEl) weekdayEl.textContent = now.toLocaleDateString(locale, { weekday: 'long' });
+}
+updateDate();
+setInterval(updateDate, 60000);
 
 // === Weather (Open-Meteo, Воробьёвы горы) ===
 function updateWeather() {
