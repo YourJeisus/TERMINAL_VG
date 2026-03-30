@@ -29,6 +29,9 @@ TERMINAL_NAME = os.environ.get('TERMINAL_NAME', 'term1')
 TERMINAL_CODE = os.environ.get('TERMINAL_CODE', '')
 TERMINAL_ID = os.environ.get('TERMINAL_ID', '1')
 
+print(f"[ENV] TERMINAL_NAME={TERMINAL_NAME}")
+print(f"[ENV] TERMINAL_CODE={'*' * len(TERMINAL_CODE) if TERMINAL_CODE else 'EMPTY!'}")
+print(f"[ENV] TERMINAL_ID={TERMINAL_ID}")
 if not TERMINAL_CODE:
     print("[ENV] WARNING: TERMINAL_CODE is empty! Set it in .env file")
 
