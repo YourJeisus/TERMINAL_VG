@@ -38,6 +38,9 @@ body {
   color: var(--text-white);
   overflow: hidden;
   -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  font-synthesis: none;
   touch-action: pan-x pan-y;
   -ms-touch-action: pan-x pan-y;
 }
