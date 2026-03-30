@@ -395,47 +395,12 @@
 
         <div class="tkt-card">
           <div class="tkt-rows">
-            <div class="tkt-row" data-price="2600">
-              <span class="tkt-pill">Взрослый (в 1 сторону)</span>
-              <span class="tkt-price">2 600 ₽</span>
-              <div class="tkt-counter">
-                <button class="tkt-counter-btn tkt-counter-btn--minus" onclick="changeQty(this, -1)">−</button>
-                <span class="tkt-counter-val">0</span>
-                <button class="tkt-counter-btn tkt-counter-btn--plus" onclick="changeQty(this, 1)">+</button>
-              </div>
-            </div>
-            <div class="tkt-row" data-price="3200">
-              <span class="tkt-pill">Взрослый (в 2 стороны)</span>
-              <span class="tkt-price">3 200 ₽</span>
-              <div class="tkt-counter">
-                <button class="tkt-counter-btn tkt-counter-btn--minus" onclick="changeQty(this, -1)">–</button>
-                <span class="tkt-counter-val">0</span>
-                <button class="tkt-counter-btn tkt-counter-btn--plus" onclick="changeQty(this, 1)">+</button>
-              </div>
-            </div>
-            <div class="tkt-row" data-price="2600">
-              <span class="tkt-pill">Детский (в 1 сторону)</span>
-              <span class="tkt-price">2 600 ₽</span>
-              <div class="tkt-counter">
-                <button class="tkt-counter-btn tkt-counter-btn--minus" onclick="changeQty(this, -1)">–</button>
-                <span class="tkt-counter-val">0</span>
-                <button class="tkt-counter-btn tkt-counter-btn--plus" onclick="changeQty(this, 1)">+</button>
-              </div>
-            </div>
-            <div class="tkt-row" data-price="3200">
-              <span class="tkt-pill">Детский (в 2 стороны)</span>
-              <span class="tkt-price">3 200 ₽</span>
-              <div class="tkt-counter">
-                <button class="tkt-counter-btn tkt-counter-btn--minus" onclick="changeQty(this, -1)">–</button>
-                <span class="tkt-counter-val">0</span>
-                <button class="tkt-counter-btn tkt-counter-btn--plus" onclick="changeQty(this, 1)">+</button>
-              </div>
-            </div>
+            <div class="tkt-unavailable" data-i18n="tickets.unavailable">Билеты временно недоступны</div>
           </div>
         </div>
 
         <div class="tkt-description">
-          <p>Канатная дорога на Воробьёвых горах — уникальный аттракцион с панорамным видом на Москву. Протяжённость маршрута — 720 метров над Москвой-рекой. Кабинки оборудованы панорамным остеклением.</p>
+          <p></p>
         </div>
       </div>
 
@@ -444,7 +409,7 @@
           <span class="tkt-total-label" data-i18n="common.total">Итого:</span>
           <span class="tkt-total-value" id="tickets-total">0 ₽</span>
         </div>
-        <button class="tkt-pay-btn" onclick="processPayment()" data-i18n="common.pay">ОПЛАТИТЬ</button>
+        <button class="tkt-pay-btn" onclick="processPayment()" data-i18n="common.pay" style="display:none">ОПЛАТИТЬ</button>
         <button class="tkt-back-btn" onclick="navigateTo('main')" data-i18n="common.back">НАЗАД</button>
       </div>
     </div>
@@ -471,37 +436,11 @@
         </div>
         <div class="tkt-card">
           <div class="tkt-rows">
-            <div class="tkt-row" data-price="800">
-              <span class="tkt-pill">Взрослый</span>
-              <span class="tkt-price">800 ₽</span>
-              <div class="tkt-counter">
-                <button class="tkt-counter-btn tkt-counter-btn--minus" onclick="changeQty(this, -1)">−</button>
-                <span class="tkt-counter-val">0</span>
-                <button class="tkt-counter-btn tkt-counter-btn--plus" onclick="changeQty(this, 1)">+</button>
-              </div>
-            </div>
-            <div class="tkt-row" data-price="500">
-              <span class="tkt-pill">Детский (до 12 лет)</span>
-              <span class="tkt-price">500 ₽</span>
-              <div class="tkt-counter">
-                <button class="tkt-counter-btn tkt-counter-btn--minus" onclick="changeQty(this, -1)">−</button>
-                <span class="tkt-counter-val">0</span>
-                <button class="tkt-counter-btn tkt-counter-btn--plus" onclick="changeQty(this, 1)">+</button>
-              </div>
-            </div>
-            <div class="tkt-row" data-price="2000">
-              <span class="tkt-pill">Семейный (2 взр + 2 дет)</span>
-              <span class="tkt-price">2 000 ₽</span>
-              <div class="tkt-counter">
-                <button class="tkt-counter-btn tkt-counter-btn--minus" onclick="changeQty(this, -1)">−</button>
-                <span class="tkt-counter-val">0</span>
-                <button class="tkt-counter-btn tkt-counter-btn--plus" onclick="changeQty(this, 1)">+</button>
-              </div>
-            </div>
+            <div class="tkt-unavailable" data-i18n="tickets.unavailable">Билеты временно недоступны</div>
           </div>
         </div>
         <div class="tkt-description">
-          <p>Парк Альпак — уютный уголок природы с дружелюбными альпаками. Можно покормить животных, сделать фото и отдохнуть всей семьёй. Идеальное место для прогулки с детьми.</p>
+          <p></p>
         </div>
       </div>
       <div class="tkt-bottom-bar">
@@ -509,7 +448,7 @@
           <span class="tkt-total-label" data-i18n="common.total">Итого:</span>
           <span class="tkt-total-value" id="alpaka-total">0 ₽</span>
         </div>
-        <button class="tkt-pay-btn" onclick="processPayment()" data-i18n="common.pay">ОПЛАТИТЬ</button>
+        <button class="tkt-pay-btn" onclick="processPayment()" data-i18n="common.pay" style="display:none">ОПЛАТИТЬ</button>
         <button class="tkt-back-btn" onclick="navigateTo('main')" data-i18n="common.back">НАЗАД</button>
       </div>
     </div>
@@ -536,37 +475,11 @@
         </div>
         <div class="tkt-card">
           <div class="tkt-rows">
-            <div class="tkt-row" data-price="900">
-              <span class="tkt-pill">Взрослый</span>
-              <span class="tkt-price">900 ₽</span>
-              <div class="tkt-counter">
-                <button class="tkt-counter-btn tkt-counter-btn--minus" onclick="changeQty(this, -1)">−</button>
-                <span class="tkt-counter-val">0</span>
-                <button class="tkt-counter-btn tkt-counter-btn--plus" onclick="changeQty(this, 1)">+</button>
-              </div>
-            </div>
-            <div class="tkt-row" data-price="600">
-              <span class="tkt-pill">Детский (до 12 лет)</span>
-              <span class="tkt-price">600 ₽</span>
-              <div class="tkt-counter">
-                <button class="tkt-counter-btn tkt-counter-btn--minus" onclick="changeQty(this, -1)">−</button>
-                <span class="tkt-counter-val">0</span>
-                <button class="tkt-counter-btn tkt-counter-btn--plus" onclick="changeQty(this, 1)">+</button>
-              </div>
-            </div>
-            <div class="tkt-row" data-price="2200">
-              <span class="tkt-pill">Семейный (2 взр + 2 дет)</span>
-              <span class="tkt-price">2 200 ₽</span>
-              <div class="tkt-counter">
-                <button class="tkt-counter-btn tkt-counter-btn--minus" onclick="changeQty(this, -1)">−</button>
-                <span class="tkt-counter-val">0</span>
-                <button class="tkt-counter-btn tkt-counter-btn--plus" onclick="changeQty(this, 1)">+</button>
-              </div>
-            </div>
+            <div class="tkt-unavailable" data-i18n="tickets.unavailable">Билеты временно недоступны</div>
           </div>
         </div>
         <div class="tkt-description">
-          <p>Музей иллюзий — интерактивное пространство с оптическими иллюзиями, зеркальными лабиринтами и необычными инсталляциями. Яркие впечатления и отличные фотографии для всей семьи.</p>
+          <p></p>
         </div>
       </div>
       <div class="tkt-bottom-bar">
@@ -574,7 +487,7 @@
           <span class="tkt-total-label" data-i18n="common.total">Итого:</span>
           <span class="tkt-total-value" id="museum-total">0 ₽</span>
         </div>
-        <button class="tkt-pay-btn" onclick="processPayment()" data-i18n="common.pay">ОПЛАТИТЬ</button>
+        <button class="tkt-pay-btn" onclick="processPayment()" data-i18n="common.pay" style="display:none">ОПЛАТИТЬ</button>
         <button class="tkt-back-btn" onclick="navigateTo('main')" data-i18n="common.back">НАЗАД</button>
       </div>
     </div>
@@ -601,37 +514,11 @@
         </div>
         <div class="tkt-card">
           <div class="tkt-rows">
-            <div class="tkt-row" data-price="2500">
-              <span class="tkt-pill">Zipline (взрослый)</span>
-              <span class="tkt-price">2 500 ₽</span>
-              <div class="tkt-counter">
-                <button class="tkt-counter-btn tkt-counter-btn--minus" onclick="changeQty(this, -1)">−</button>
-                <span class="tkt-counter-val">0</span>
-                <button class="tkt-counter-btn tkt-counter-btn--plus" onclick="changeQty(this, 1)">+</button>
-              </div>
-            </div>
-            <div class="tkt-row" data-price="1800">
-              <span class="tkt-pill">Zipline (детский)</span>
-              <span class="tkt-price">1 800 ₽</span>
-              <div class="tkt-counter">
-                <button class="tkt-counter-btn tkt-counter-btn--minus" onclick="changeQty(this, -1)">−</button>
-                <span class="tkt-counter-val">0</span>
-                <button class="tkt-counter-btn tkt-counter-btn--plus" onclick="changeQty(this, 1)">+</button>
-              </div>
-            </div>
-            <div class="tkt-row" data-price="3500">
-              <span class="tkt-pill">Полный маршрут</span>
-              <span class="tkt-price">3 500 ₽</span>
-              <div class="tkt-counter">
-                <button class="tkt-counter-btn tkt-counter-btn--minus" onclick="changeQty(this, -1)">−</button>
-                <span class="tkt-counter-val">0</span>
-                <button class="tkt-counter-btn tkt-counter-btn--plus" onclick="changeQty(this, 1)">+</button>
-              </div>
-            </div>
+            <div class="tkt-unavailable" data-i18n="tickets.unavailable">Билеты временно недоступны</div>
           </div>
         </div>
         <div class="tkt-description">
-          <p>Skypark — экстремальный парк приключений с зиплайном над Москвой-рекой. Скорость полёта до 40 км/ч на высоте 60 метров. Незабываемые ощущения и захватывающие виды.</p>
+          <p></p>
         </div>
       </div>
       <div class="tkt-bottom-bar">
@@ -639,7 +526,7 @@
           <span class="tkt-total-label" data-i18n="common.total">Итого:</span>
           <span class="tkt-total-value" id="skypark-total">0 ₽</span>
         </div>
-        <button class="tkt-pay-btn" onclick="processPayment()" data-i18n="common.pay">ОПЛАТИТЬ</button>
+        <button class="tkt-pay-btn" onclick="processPayment()" data-i18n="common.pay" style="display:none">ОПЛАТИТЬ</button>
         <button class="tkt-back-btn" onclick="navigateTo('main')" data-i18n="common.back">НАЗАД</button>
       </div>
     </div>
