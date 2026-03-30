@@ -96,9 +96,9 @@
 
     loadLanguage(lang, function() {
       applyTranslations();
-      // Re-translate API content (category names, descriptions, tariffs)
-      if (window.loadedCategories && window.translateApiContent) {
-        translateApiContent(loadedCategories);
+      // Re-render categories from original API data, then translate
+      if (window.loadedCategories && window.renderCategories) {
+        renderCategories(loadedCategories);
       }
       // Update localized date & time
       if (window.updateDateTime) updateDateTime();

@@ -207,35 +207,57 @@ function translateApiContent(categories) {
     var screen = document.getElementById('screen-' + screenKey);
     if (!screen) return;
 
-    // Translate category name
+    // Collect all texts to translate in one batch: name + tariff names
+    // (descriptions handled separately due to length)
+    var shortTexts = [];
+    var shortTargets = []; // { el, type }
+
+    // Category name
     var titleEl = screen.querySelector('.tkt-title');
     if (titleEl && cat.category_name) {
-      translateText(cat.category_name, lang, function(translated) {
-        titleEl.textContent = translated;
+      shortTexts.push(cat.category_name);
+      shortTargets.push({ el: titleEl, type: 'text' });
+    }
+
+    // Tariff names (from original API data, not DOM)
+    var tariffs = cat.category_tariffs || [];
+    var todayType = getTodayDayType();
+    var filtered = tariffs;
+    if (todayType && tariffs.length > 0) {
+      filtered = tariffs.filter(function(t) { return t.day_type === todayType; });
+    }
+    var pills = screen.querySelectorAll('.tkt-row .tkt-pill');
+    filtered.forEach(function(tariff, i) {
+      if (tariff.name && pills[i]) {
+        shortTexts.push(tariff.name);
+        shortTargets.push({ el: pills[i], type: 'text' });
+      }
+    });
+
+    // Batch translate short texts (join with separator, split after)
+    if (shortTexts.length > 0) {
+      var SEP = ' ||| ';
+      var joined = shortTexts.join(SEP);
+      translateText(joined, lang, function(translated) {
+        var parts = translated.split(/\s*\|\|\|\s*/);
+        for (var i = 0; i < shortTargets.length; i++) {
+          if (parts[i]) shortTargets[i].el.textContent = parts[i].trim();
+        }
       });
     }
 
-    // Translate category description
+    // Translate description separately (can be long)
     var descEl = screen.querySelector('.tkt-description p');
     if (descEl && cat.category_description) {
-      var plainDesc = cat.category_description.replace(/\r\n/g, '\n').replace(/\r/g, '\n');
-      translateText(plainDesc, lang, function(translated) {
+      // Strip \r\n for translation, restore <br> after
+      var plain = cat.category_description.replace(/\r\n/g, '\n').replace(/\r/g, '\n');
+      translateText(plain, lang, function(translated) {
         var safe = translated
           .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
           .replace(/\n/g, '<br>');
         descEl.innerHTML = safe;
       });
     }
-
-    // Translate tariff names
-    screen.querySelectorAll('.tkt-row .tkt-pill').forEach(function(pill) {
-      var originalName = pill.textContent.trim();
-      if (originalName) {
-        translateText(originalName, lang, function(translated) {
-          pill.textContent = translated;
-        });
-      }
-    });
   });
 }
 
