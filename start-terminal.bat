@@ -29,9 +29,9 @@ REG ADD "HKCU\SOFTWARE\Policies\Google\Chrome" /v SilentPrintingEnabled /t REG_D
 REG ADD "HKLM\SOFTWARE\Policies\Google\Chrome" /v PrintPreviewUseSystemDefaultPrinter /t REG_DWORD /d 1 /f >nul 2>&1
 REG ADD "HKCU\SOFTWARE\Policies\Google\Chrome" /v PrintPreviewUseSystemDefaultPrinter /t REG_DWORD /d 1 /f >nul 2>&1
 
-echo [5/7] Starting print server (port 9999)...
+echo [5/7] Starting server (port 9999)...
 cd /d "%~dp0"
-start /b "" python server.py --print-only
+start /b "" python server.py
 timeout /t 1 /nobreak >nul
 
 echo [6/7] Starting payment service (port 5050)...
@@ -43,7 +43,7 @@ start "" "C:\Program Files\Google\Chrome\Application\chrome.exe" --user-data-dir
 
 echo.
 echo === Terminal started ===
-echo Print server:   localhost:9999
+echo Server:         localhost:9999 (print + API proxy)
 echo Payment service: localhost:5050 (PAX S300 via DualConnector)
 echo Exit kiosk: Alt+F4
 pause
