@@ -47,23 +47,23 @@ net localgroup Users %KIOSK_USER% /add >nul 2>&1
 :: ============================================
 echo [2/7] Защита папки %INSTALL_DIR%...
 :: Remove inherited permissions, grant full to Admins only
-icacls "%INSTALL_DIR%" /inheritance:r /grant:r Administrators:(OI)(CI)F /grant:r SYSTEM:(OI)(CI)F >nul 2>&1
+icacls "%INSTALL_DIR%" /inheritance:r /grant:r "Administrators:(OI)(CI)F" /grant:r "SYSTEM:(OI)(CI)F" >nul 2>&1
 :: Kiosk user: read + execute only (can't edit code or .env)
-icacls "%INSTALL_DIR%" /grant:r %KIOSK_USER%:(OI)(CI)RX >nul 2>&1
+icacls "%INSTALL_DIR%" /grant:r "%KIOSK_USER%:(OI)(CI)RX" >nul 2>&1
 echo       Доступ: Администраторы=полный, %KIOSK_USER%=только чтение
 
 :: ============================================
 :: 3. Protect .env specifically (admin only)
 :: ============================================
 echo [3/7] Защита .env файла...
-if exist "%INSTALL_DIR%.env" (
-    icacls "%INSTALL_DIR%.env" /inheritance:r /grant:r Administrators:(F) /grant:r SYSTEM:(F) >nul 2>&1
-    :: Deny kiosk user from reading .env
-    icacls "%INSTALL_DIR%.env" /deny %KIOSK_USER%:(R) >nul 2>&1
-    echo       .env доступен только администраторам
-) else (
-    echo       [!] .env не найден — создайте из .env.example
-)
+if not exist "%INSTALL_DIR%.env" goto :no_env
+icacls "%INSTALL_DIR%.env" /inheritance:r /grant:r "Administrators:(F)" /grant:r "SYSTEM:(F)" >nul 2>&1
+icacls "%INSTALL_DIR%.env" /deny "%KIOSK_USER%:(R)" >nul 2>&1
+echo       .env доступен только администраторам
+goto :env_done
+:no_env
+echo       [!] .env не найден — создайте из .env.example
+:env_done
 
 :: ============================================
 :: 4. Hide project folder
