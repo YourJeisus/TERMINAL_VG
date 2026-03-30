@@ -32,11 +32,11 @@ REG ADD "HKCU\SOFTWARE\Policies\Google\Chrome" /v PrintPreviewUseSystemDefaultPr
 echo [5/7] Starting server (port 9999)...
 cd /d "%~dp0"
 start /b "" python server.py
-timeout /t 1 /nobreak >nul
+timeout /t 3 /nobreak >nul
 
 echo [6/7] Starting payment service (port 5050)...
 start /b "" python payment_service.py
-timeout /t 2 /nobreak >nul
+timeout /t 3 /nobreak >nul
 
 echo [7/7] Launching Chrome kiosk...
 start "" "C:\Program Files\Google\Chrome\Application\chrome.exe" --user-data-dir="C:\TerminalVG" --kiosk --kiosk-printing --disable-session-crashed-bubble --noerrdialogs --disable-infobars --disable-features=TranslateUI --disable-background-mode --disable-pinch --overscroll-history-navigation=0 http://localhost:9999
