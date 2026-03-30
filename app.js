@@ -87,9 +87,14 @@ function renderCategories(categories) {
     var titleEl = screen.querySelector('.tkt-title');
     if (titleEl && cat.category_name) titleEl.textContent = cat.category_name;
 
-    // Update description
+    // Update description (preserve line breaks from API)
     var descEl = screen.querySelector('.tkt-description p');
-    if (descEl && cat.category_description) descEl.textContent = cat.category_description;
+    if (descEl && cat.category_description) {
+      var safe = cat.category_description
+        .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+        .replace(/\r\n/g, '<br>').replace(/\n/g, '<br>').replace(/\r/g, '<br>');
+      descEl.innerHTML = safe;
+    }
 
     // Render tariffs (filtered by today's day type)
     if (cat.category_tariffs && cat.category_tariffs.length > 0) {
@@ -132,6 +137,8 @@ function renderCategories(categories) {
   });
 
   lucide.createIcons();
+  // Re-apply translations after dynamic content is rendered
+  if (window.i18n) i18n.applyTranslations();
 }
 
 // Populate ticket screen carousels from SCREEN_BANNERS (runs immediately, no API needed)
@@ -601,7 +608,7 @@ function processPayment() {
   pendingCartTotal = calculateTotal(pendingCartItems);
 
   if (pendingCartItems.length === 0 || pendingCartTotal === 0) {
-    showAlert('Выберите хотя бы один товар');
+    showAlert(t('alerts.select_item'));
     return;
   }
 
@@ -655,7 +662,7 @@ function showPaymentLoader(text, options) {
     if (cardView) cardView.style.display = 'none';
     if (genericView) genericView.style.display = '';
     var loaderText = genericView ? genericView.querySelector('.payment-loader-text') : null;
-    if (loaderText) loaderText.textContent = text || 'Обработка оплаты...';
+    if (loaderText) loaderText.textContent = text || t('pay.processing');
   }
 
   if (loader) loader.classList.add('active');
@@ -680,7 +687,7 @@ function payByCard() {
 
   // Update status text on payment screen
   var statusText = document.querySelector('.pay-status-text');
-  if (statusText) statusText.textContent = 'Приложите карту или телефон к терминалу оплаты';
+  if (statusText) statusText.textContent = t('pay.card_hint');
 
   // AbortController for 50s timeout (DC timeout is 45s)
   paymentAbortController = new AbortController();
@@ -704,7 +711,7 @@ function payByCard() {
       lastPaymentCardNumber = data.card_number || '';
       completePayment('Банковская карта');
     } else {
-      var errorMsg = data.message || data.error || 'Оплата отклонена';
+      var errorMsg = data.message || data.error || t('alerts.payment_declined');
       showAlert(errorMsg);
       goBackFromPayment();
     }
@@ -713,10 +720,10 @@ function payByCard() {
     clearTimeout(timeoutId);
     paymentInProgress = false;
     if (err.name === 'AbortError') {
-      showAlert('Время ожидания оплаты истекло');
+      showAlert(t('alerts.payment_timeout'));
     } else {
       console.error('[PAY] Error:', err);
-      showAlert('Ошибка связи с терминалом оплаты');
+      showAlert(t('alerts.connection_error'));
     }
     goBackFromPayment();
   });
@@ -753,7 +760,7 @@ function payBySBP() {
     if (countdownEl) countdownEl.textContent = remaining;
     if (remaining <= 0) {
       clearInterval(sbpCountdownInterval);
-      showAlert('Время ожидания истекло');
+      showAlert(t('alerts.sbp_timeout'));
       navigateTo('payment');
     }
   }, 1000);
@@ -893,7 +900,7 @@ function completePayment(paymentMethod) {
     } catch (e) {
       console.error('Ticket creation failed:', e);
       hidePrintLoader();
-      showAlert('Ошибка создания билета');
+      showAlert(t('alerts.ticket_error'));
       return;
     }
 
@@ -951,11 +958,11 @@ function receiptBackToButtons() {
 function receiptSendEmail() {
   var email = document.getElementById('receipt-email-input').value.trim();
   if (!email || email.indexOf('@') === -1 || email.indexOf('.') === -1) {
-    showAlert('Введите корректный email');
+    showAlert(t('alerts.invalid_email'));
     return;
   }
   console.log('[EMAIL RECEIPT] ' + email, pendingTickets.map(function(t) { return t.number; }));
-  showAlert('Чек отправлен на ' + email);
+  showAlert(t('alerts.receipt_sent', { email: email }));
   goToMainFromSuccess();
 }
 
@@ -994,7 +1001,7 @@ function printAllTickets(onAllDone) {
       if (onAllDone) onAllDone();
       return;
     }
-    if (countEl) countEl.textContent = (index + 1) + ' из ' + total;
+    if (countEl) countEl.textContent = (index + 1) + ' ' + t('print.of') + ' ' + total;
     try {
       TicketService.printTicket(pendingTickets[index], function() {
         printNext(index + 1);

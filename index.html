@@ -58,8 +58,8 @@
           <div class="splash-circle">
             <i data-lucide="hand"></i>
           </div>
-          <p class="splash-cta">Коснитесь экрана</p>
-          <p class="splash-cta-sub">ЧТОБЫ НАЧАТЬ</p>
+          <p class="splash-cta" data-i18n="splash.cta">Коснитесь экрана</p>
+          <p class="splash-cta-sub" data-i18n="splash.cta_sub">ЧТОБЫ НАЧАТЬ</p>
         </div>
         <div class="splash-bottom">
           <div class="splash-info"><i data-lucide="thermometer"></i> -5°C</div>
@@ -76,7 +76,7 @@
           <img src="images/VG_logo_masked.svg" class="header-logo-img" alt="Воробьёвы Горы">
         </div>
         <div class="header-right">
-          <span class="header-lang">RU</span>
+          <button class="lang-btn" onclick="toggleLangDropdown(event)"><img class="lang-current-flag" src="images/flags/ru.svg" alt="Lang"></button>
         </div>
       </header>
 
@@ -124,12 +124,12 @@
             <div class="ent-card-photo" style="background-image:url('images/main_screen/square/kanatnaya doroga.png')"></div>
             <div class="ent-card-gradient"></div>
             <div class="ent-card-body">
-              <div class="ent-card-btn"><i data-lucide="ticket" class="ent-card-btn-icon"></i><span>Купить билет</span></div>
+              <div class="ent-card-btn"><i data-lucide="ticket" class="ent-card-btn-icon"></i><span data-i18n="common.buy_ticket">Купить билет</span></div>
               <div class="ent-card-bottom">
                 <i data-lucide="cable-car" class="ent-card-icon"></i>
                 <div class="ent-card-text">
-                  <span class="ent-card-title">Канатная дорога</span>
-                  <span class="ent-card-desc">Яркая достопримечательность столицы</span>
+                  <span class="ent-card-title" data-i18n="main.cable_car">Канатная дорога</span>
+                  <span class="ent-card-desc" data-i18n="main.cable_car_desc">Яркая достопримечательность столицы</span>
                 </div>
               </div>
             </div>
@@ -138,12 +138,12 @@
             <div class="ent-card-photo" style="background-image:url('images/main_screen/square/alpaki.png')"></div>
             <div class="ent-card-gradient"></div>
             <div class="ent-card-body">
-              <div class="ent-card-btn"><i data-lucide="ticket" class="ent-card-btn-icon"></i><span>Купить билет</span></div>
+              <div class="ent-card-btn"><i data-lucide="ticket" class="ent-card-btn-icon"></i><span data-i18n="common.buy_ticket">Купить билет</span></div>
               <div class="ent-card-bottom">
                 <i data-lucide="trees" class="ent-card-icon"></i>
                 <div class="ent-card-text">
-                  <span class="ent-card-title">Парк Альпак</span>
-                  <span class="ent-card-desc">Пообщаться с животными</span>
+                  <span class="ent-card-title" data-i18n="main.alpaka">Парк Альпак</span>
+                  <span class="ent-card-desc" data-i18n="main.alpaka_desc">Пообщаться с животными</span>
                 </div>
               </div>
             </div>
@@ -152,12 +152,12 @@
             <div class="ent-card-photo" style="background-image:url('images/main_screen/square/muzei_iluzii.png')"></div>
             <div class="ent-card-gradient"></div>
             <div class="ent-card-body">
-              <div class="ent-card-btn"><i data-lucide="ticket" class="ent-card-btn-icon"></i><span>Купить билет</span></div>
+              <div class="ent-card-btn"><i data-lucide="ticket" class="ent-card-btn-icon"></i><span data-i18n="common.buy_ticket">Купить билет</span></div>
               <div class="ent-card-bottom">
                 <i data-lucide="sparkles" class="ent-card-icon"></i>
                 <div class="ent-card-text">
-                  <span class="ent-card-title">Музей иллюзий</span>
-                  <span class="ent-card-desc">Интерактивное пространство</span>
+                  <span class="ent-card-title" data-i18n="main.museum">Музей иллюзий</span>
+                  <span class="ent-card-desc" data-i18n="main.museum_desc">Интерактивное пространство</span>
                 </div>
               </div>
             </div>
@@ -166,12 +166,12 @@
             <div class="ent-card-photo" style="background-image:url('images/main_screen/square/zip_layn.png')"></div>
             <div class="ent-card-gradient"></div>
             <div class="ent-card-body">
-              <div class="ent-card-btn"><i data-lucide="ticket" class="ent-card-btn-icon"></i><span>Купить билет</span></div>
+              <div class="ent-card-btn"><i data-lucide="ticket" class="ent-card-btn-icon"></i><span data-i18n="common.buy_ticket">Купить билет</span></div>
               <div class="ent-card-bottom">
                 <i data-lucide="zap" class="ent-card-icon"></i>
                 <div class="ent-card-text">
-                  <span class="ent-card-title">Skypark</span>
-                  <span class="ent-card-desc">Zipline на расстояние 700 метров</span>
+                  <span class="ent-card-title" data-i18n="main.skypark">Skypark</span>
+                  <span class="ent-card-desc" data-i18n="main.skypark_desc">Zipline на расстояние 700 метров</span>
                 </div>
               </div>
             </div>
@@ -186,17 +186,17 @@
           <div class="info-card">
             <i data-lucide="thermometer" class="info-card-icon"></i>
             <span class="info-value" id="weather-temp">—</span>
-            <span class="info-label">Погода</span>
+            <span class="info-label" data-i18n="info.weather">Погода</span>
           </div>
           <div class="info-card">
             <i data-lucide="clock" class="info-card-icon"></i>
             <span class="info-value" id="current-time">—</span>
-            <span class="info-label">Сейчас</span>
+            <span class="info-label" data-i18n="info.visitors">Сейчас</span>
           </div>
           <div class="info-card">
             <i data-lucide="timer" class="info-card-icon"></i>
             <span class="info-value">10–22</span>
-            <span class="info-label">Часы работы</span>
+            <span class="info-label" data-i18n="info.hours">Часы работы</span>
           </div>
         </div>
       </div>
@@ -221,15 +221,15 @@
           <img src="images/VG_logo_masked.svg" class="header-logo-img header-logo-img--sm" alt="Воробьёвы Горы">
         </div>
         <div class="header-right">
-          <span class="header-lang">RU</span>
+          <button class="lang-btn" onclick="toggleLangDropdown(event)"><img class="lang-current-flag" src="images/flags/ru.svg" alt="Lang"></button>
         </div>
       </header>
 
       <div class="scan-wrap">
         <div class="scan-card">
           <div class="scan-text-group">
-            <span class="scan-title">Приложите карту</span>
-            <span class="scan-title">к считывателю</span>
+            <span class="scan-title" data-i18n="scan.title_line1">Приложите карту</span>
+            <span class="scan-title" data-i18n="scan.title_line2">к считывателю</span>
           </div>
           <div class="scan-nfc-area" onclick="event.stopPropagation(); navigateTo('topup')" style="cursor:pointer" title="Нажмите для демо перехода">
             <div class="scan-ring scan-ring--outer"></div>
@@ -237,12 +237,12 @@
             <div class="scan-ring scan-ring--inner"></div>
             <svg class="scan-nfc-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" fill="white"><path d="M480-80q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Zm0-80q134 0 227-93t93-227q0-134-93-227t-227-93q-134 0-227 93t-93 227q0 134 93 227t227 93Zm0-120q-66 0-113-47t-47-113q0-66 47-113t113-47q66 0 113 47t47 113q0 66-47 113t-113 47Zm0-80q33 0 56.5-23.5T560-480q0-33-23.5-56.5T480-560q-33 0-56.5 23.5T400-480q0 33 23.5 56.5T480-400Z"/></svg>
           </div>
-          <p class="scan-hint">Поднесите ски-пасс к области считывателя</p>
+          <p class="scan-hint" data-i18n="scan.hint">Поднесите ски-пасс к области считывателя</p>
         </div>
       </div>
 
       <div class="scan-bottom">
-        <button class="scan-back-btn" onclick="navigateTo('main')">НАЗАД</button>
+        <button class="scan-back-btn" onclick="navigateTo('main')" data-i18n="common.back">НАЗАД</button>
       </div>
     </div>
 
@@ -254,20 +254,20 @@
           <img src="images/VG_logo_masked.svg" class="header-logo-img header-logo-img--sm" alt="Воробьёвы Горы">
         </div>
         <div class="header-right">
-          <span class="header-lang">RU</span>
+          <button class="lang-btn" onclick="toggleLangDropdown(event)"><img class="lang-current-flag" src="images/flags/ru.svg" alt="Lang"></button>
         </div>
       </header>
 
       <div class="topup-wrap">
         <div class="topup-main-card">
           <div class="topup-top-bar">
-            <span class="topup-title">Пополнение скипаса</span>
-            <span class="topup-season-badge">Сезон 2025/26</span>
+            <span class="topup-title" data-i18n="topup.title">Пополнение скипаса</span>
+            <span class="topup-season-badge" data-i18n="topup.season">Сезон 2025/26</span>
           </div>
 
           <div class="topup-tab-row">
-            <button class="topup-tab topup-tab--active">Будни (пн-пт)</button>
-            <button class="topup-tab">Выходные / праздники</button>
+            <button class="topup-tab topup-tab--active" data-i18n="topup.tab_weekdays">Будни (пн-пт)</button>
+            <button class="topup-tab" data-i18n="topup.tab_weekends">Выходные / праздники</button>
           </div>
 
           <div class="topup-cards-list">
@@ -275,23 +275,23 @@
             <div class="topup-card">
               <div class="topup-card-header">
                 <div class="topup-card-info">
-                  <span class="topup-card-name">Взрослый</span>
-                  <span class="topup-card-age">от 15 лет</span>
+                  <span class="topup-card-name" data-i18n="topup.adult">Взрослый</span>
+                  <span class="topup-card-age" data-i18n="topup.adult_age">от 15 лет</span>
                 </div>
                 <i data-lucide="user" class="topup-card-icon"></i>
               </div>
               <div class="topup-prices">
                 <div class="topup-price-cell" onclick="selectPrice(this, 990)">
                   <span class="topup-price-val">990 ₽</span>
-                  <span class="topup-price-label">до 16:00</span>
+                  <span class="topup-price-label" data-i18n="topup.before_16">до 16:00</span>
                 </div>
                 <div class="topup-price-cell" onclick="selectPrice(this, 1600)">
                   <span class="topup-price-val">1 600 ₽</span>
-                  <span class="topup-price-label">после 16:00</span>
+                  <span class="topup-price-label" data-i18n="topup.after_16">после 16:00</span>
                 </div>
                 <div class="topup-price-cell" onclick="selectPrice(this, 2000)">
                   <span class="topup-price-val">2 000 ₽</span>
-                  <span class="topup-price-label">день + вечер</span>
+                  <span class="topup-price-label" data-i18n="topup.day_evening">день + вечер</span>
                 </div>
               </div>
             </div>
@@ -300,23 +300,23 @@
             <div class="topup-card">
               <div class="topup-card-header">
                 <div class="topup-card-info">
-                  <span class="topup-card-name">Детский</span>
-                  <span class="topup-card-age">7 – 14 лет</span>
+                  <span class="topup-card-name" data-i18n="topup.child">Детский</span>
+                  <span class="topup-card-age" data-i18n="topup.child_age">7 – 14 лет</span>
                 </div>
                 <i data-lucide="baby" class="topup-card-icon"></i>
               </div>
               <div class="topup-prices">
                 <div class="topup-price-cell" onclick="selectPrice(this, 690)">
                   <span class="topup-price-val">690 ₽</span>
-                  <span class="topup-price-label">до 16:00</span>
+                  <span class="topup-price-label" data-i18n="topup.before_16">до 16:00</span>
                 </div>
                 <div class="topup-price-cell" onclick="selectPrice(this, 1100)">
                   <span class="topup-price-val">1 100 ₽</span>
-                  <span class="topup-price-label">после 16:00</span>
+                  <span class="topup-price-label" data-i18n="topup.after_16">после 16:00</span>
                 </div>
                 <div class="topup-price-cell" onclick="selectPrice(this, 1400)">
                   <span class="topup-price-val">1 400 ₽</span>
-                  <span class="topup-price-label">день + вечер</span>
+                  <span class="topup-price-label" data-i18n="topup.day_evening">день + вечер</span>
                 </div>
               </div>
             </div>
@@ -325,23 +325,23 @@
             <div class="topup-card">
               <div class="topup-card-header">
                 <div class="topup-card-info">
-                  <span class="topup-card-name">Льготный</span>
-                  <span class="topup-card-age">пенсионеры, студенты, инвалиды</span>
+                  <span class="topup-card-name" data-i18n="topup.discount">Льготный</span>
+                  <span class="topup-card-age" data-i18n="topup.discount_desc">пенсионеры, студенты, инвалиды</span>
                 </div>
                 <i data-lucide="heart" class="topup-card-icon"></i>
               </div>
               <div class="topup-prices">
                 <div class="topup-price-cell" onclick="selectPrice(this, 690)">
                   <span class="topup-price-val">690 ₽</span>
-                  <span class="topup-price-label">до 16:00</span>
+                  <span class="topup-price-label" data-i18n="topup.before_16">до 16:00</span>
                 </div>
                 <div class="topup-price-cell" onclick="selectPrice(this, 1100)">
                   <span class="topup-price-val">1 100 ₽</span>
-                  <span class="topup-price-label">после 16:00</span>
+                  <span class="topup-price-label" data-i18n="topup.after_16">после 16:00</span>
                 </div>
                 <div class="topup-price-cell" onclick="selectPrice(this, 1400)">
                   <span class="topup-price-val">1 400 ₽</span>
-                  <span class="topup-price-label">день + вечер</span>
+                  <span class="topup-price-label" data-i18n="topup.day_evening">день + вечер</span>
                 </div>
               </div>
             </div>
@@ -349,13 +349,13 @@
 
           <div class="topup-hint">
             <i data-lucide="info" class="topup-hint-icon"></i>
-            <span class="topup-hint-text">Выберите тариф для пополнения</span>
+            <span class="topup-hint-text" data-i18n="topup.select_hint">Выберите тариф для пополнения</span>
           </div>
         </div>
       </div>
 
       <div class="topup-bottom">
-        <button class="scan-back-btn" onclick="navigateTo('scan-card')">НАЗАД</button>
+        <button class="scan-back-btn" onclick="navigateTo('scan-card')" data-i18n="common.back">НАЗАД</button>
       </div>
     </div>
 
@@ -367,7 +367,7 @@
           <img src="images/VG_logo_masked.svg" class="header-logo-img header-logo-img--sm" alt="Воробьёвы Горы">
         </div>
         <div class="header-right">
-          <span class="header-lang">RU</span>
+          <button class="lang-btn" onclick="toggleLangDropdown(event)"><img class="lang-current-flag" src="images/flags/ru.svg" alt="Lang"></button>
         </div>
       </header>
 
@@ -434,11 +434,11 @@
 
       <div class="tkt-bottom-bar">
         <div class="tkt-total">
-          <span class="tkt-total-label">Итого:</span>
+          <span class="tkt-total-label" data-i18n="common.total">Итого:</span>
           <span class="tkt-total-value" id="tickets-total">0 ₽</span>
         </div>
-        <button class="tkt-pay-btn" onclick="processPayment()">ОПЛАТИТЬ</button>
-        <button class="tkt-back-btn" onclick="navigateTo('main')">НАЗАД</button>
+        <button class="tkt-pay-btn" onclick="processPayment()" data-i18n="common.pay">ОПЛАТИТЬ</button>
+        <button class="tkt-back-btn" onclick="navigateTo('main')" data-i18n="common.back">НАЗАД</button>
       </div>
     </div>
 
@@ -449,7 +449,7 @@
           <button class="back-btn" onclick="navigateTo('main')"><i data-lucide="arrow-left"></i></button>
           <img src="images/VG_logo_masked.svg" class="header-logo-img header-logo-img--sm" alt="Воробьёвы Горы">
         </div>
-        <div class="header-right"><span class="header-lang">RU</span></div>
+        <div class="header-right"><button class="lang-btn" onclick="toggleLangDropdown(event)"><img class="lang-current-flag" src="images/flags/ru.svg" alt="Lang"></button></div>
       </header>
       <div class="tkt-scroll">
         <div class="tkt-title-area">
@@ -499,11 +499,11 @@
       </div>
       <div class="tkt-bottom-bar">
         <div class="tkt-total">
-          <span class="tkt-total-label">Итого:</span>
+          <span class="tkt-total-label" data-i18n="common.total">Итого:</span>
           <span class="tkt-total-value" id="alpaka-total">0 ₽</span>
         </div>
-        <button class="tkt-pay-btn" onclick="processPayment()">ОПЛАТИТЬ</button>
-        <button class="tkt-back-btn" onclick="navigateTo('main')">НАЗАД</button>
+        <button class="tkt-pay-btn" onclick="processPayment()" data-i18n="common.pay">ОПЛАТИТЬ</button>
+        <button class="tkt-back-btn" onclick="navigateTo('main')" data-i18n="common.back">НАЗАД</button>
       </div>
     </div>
 
@@ -514,7 +514,7 @@
           <button class="back-btn" onclick="navigateTo('main')"><i data-lucide="arrow-left"></i></button>
           <img src="images/VG_logo_masked.svg" class="header-logo-img header-logo-img--sm" alt="Воробьёвы Горы">
         </div>
-        <div class="header-right"><span class="header-lang">RU</span></div>
+        <div class="header-right"><button class="lang-btn" onclick="toggleLangDropdown(event)"><img class="lang-current-flag" src="images/flags/ru.svg" alt="Lang"></button></div>
       </header>
       <div class="tkt-scroll">
         <div class="tkt-title-area">
@@ -564,11 +564,11 @@
       </div>
       <div class="tkt-bottom-bar">
         <div class="tkt-total">
-          <span class="tkt-total-label">Итого:</span>
+          <span class="tkt-total-label" data-i18n="common.total">Итого:</span>
           <span class="tkt-total-value" id="museum-total">0 ₽</span>
         </div>
-        <button class="tkt-pay-btn" onclick="processPayment()">ОПЛАТИТЬ</button>
-        <button class="tkt-back-btn" onclick="navigateTo('main')">НАЗАД</button>
+        <button class="tkt-pay-btn" onclick="processPayment()" data-i18n="common.pay">ОПЛАТИТЬ</button>
+        <button class="tkt-back-btn" onclick="navigateTo('main')" data-i18n="common.back">НАЗАД</button>
       </div>
     </div>
 
@@ -579,7 +579,7 @@
           <button class="back-btn" onclick="navigateTo('main')"><i data-lucide="arrow-left"></i></button>
           <img src="images/VG_logo_masked.svg" class="header-logo-img header-logo-img--sm" alt="Воробьёвы Горы">
         </div>
-        <div class="header-right"><span class="header-lang">RU</span></div>
+        <div class="header-right"><button class="lang-btn" onclick="toggleLangDropdown(event)"><img class="lang-current-flag" src="images/flags/ru.svg" alt="Lang"></button></div>
       </header>
       <div class="tkt-scroll">
         <div class="tkt-title-area">
@@ -629,11 +629,11 @@
       </div>
       <div class="tkt-bottom-bar">
         <div class="tkt-total">
-          <span class="tkt-total-label">Итого:</span>
+          <span class="tkt-total-label" data-i18n="common.total">Итого:</span>
           <span class="tkt-total-value" id="skypark-total">0 ₽</span>
         </div>
-        <button class="tkt-pay-btn" onclick="processPayment()">ОПЛАТИТЬ</button>
-        <button class="tkt-back-btn" onclick="navigateTo('main')">НАЗАД</button>
+        <button class="tkt-pay-btn" onclick="processPayment()" data-i18n="common.pay">ОПЛАТИТЬ</button>
+        <button class="tkt-back-btn" onclick="navigateTo('main')" data-i18n="common.back">НАЗАД</button>
       </div>
     </div>
 
@@ -645,7 +645,7 @@
           <img src="images/VG_logo_masked.svg" class="header-logo-img" alt="Воробьёвы Горы">
         </div>
         <div class="header-right">
-          <span class="header-lang">RU</span>
+          <button class="lang-btn" onclick="toggleLangDropdown(event)"><img class="lang-current-flag" src="images/flags/ru.svg" alt="Lang"></button>
         </div>
       </header>
 
@@ -702,12 +702,12 @@
         </div>
 
         <div class="rent-total">
-          <span class="rent-total-label">Итого:</span>
+          <span class="rent-total-label" data-i18n="common.total">Итого:</span>
           <span class="rent-total-value" id="rental-total">3 000 ₽</span>
         </div>
 
-        <button class="rent-pay-btn" onclick="processPayment()">ОПЛАТИТЬ</button>
-        <button class="rent-back-btn" onclick="navigateTo('main')">НАЗАД</button>
+        <button class="rent-pay-btn" onclick="processPayment()" data-i18n="common.pay">ОПЛАТИТЬ</button>
+        <button class="rent-back-btn" onclick="navigateTo('main')" data-i18n="common.back">НАЗАД</button>
       </div>
     </div>
 
@@ -719,7 +719,7 @@
           <img src="images/VG_logo_masked.svg" class="header-logo-img" alt="Воробьёвы Горы">
         </div>
         <div class="header-right">
-          <span class="header-lang">RU</span>
+          <button class="lang-btn" onclick="toggleLangDropdown(event)"><img class="lang-current-flag" src="images/flags/ru.svg" alt="Lang"></button>
         </div>
       </header>
 
@@ -766,7 +766,7 @@
       </div>
 
       <div class="screen-bottom">
-        <button class="btn btn-outline btn-wide" onclick="navigateTo('main')">НАЗАД</button>
+        <button class="btn btn-outline btn-wide" onclick="navigateTo('main')" data-i18n="common.back">НАЗАД</button>
       </div>
     </div>
 
@@ -777,19 +777,19 @@
           <img src="images/VG_logo_masked.svg" class="header-logo-img header-logo-img--sm" alt="Воробьёвы Горы">
         </div>
         <div class="header-right">
-          <span class="header-lang">RU</span>
+          <button class="lang-btn" onclick="toggleLangDropdown(event)"><img class="lang-current-flag" src="images/flags/ru.svg" alt="Lang"></button>
         </div>
       </header>
 
       <div class="pay-wrap">
         <div class="pay-card">
-          <h2 class="pay-title">Оплата</h2>
-          <p class="pay-amount">К оплате: <span id="pay-total-value">0 ₽</span></p>
+          <h2 class="pay-title" data-i18n="pay.title">Оплата</h2>
+          <p class="pay-amount"><span data-i18n="pay.amount">К оплате:</span> <span id="pay-total-value">0 ₽</span></p>
 
           <!-- Ваш заказ -->
           <div class="pay-order-summary" id="pay-order-summary">
             <div class="pay-order-header">
-              <span class="pay-order-title">Ваш заказ</span>
+              <span class="pay-order-title" data-i18n="pay.order_title">Ваш заказ</span>
               <i data-lucide="receipt" class="pay-order-icon"></i>
             </div>
             <div class="pay-order-divider"></div>
@@ -801,8 +801,8 @@
           <!-- Статус оплаты -->
           <div class="pay-status" id="pay-status">
             <div class="payment-spinner"></div>
-            <p class="pay-status-text">Приложите карту или телефон к терминалу оплаты</p>
-            <p class="pay-status-hint">Для отмены нажмите красную кнопку на терминале</p>
+            <p class="pay-status-text" data-i18n="pay.card_hint">Приложите карту или телефон к терминалу оплаты</p>
+            <p class="pay-status-hint" data-i18n="pay.cancel_hint">Для отмены нажмите красную кнопку на терминале</p>
           </div>
         </div>
       </div>
@@ -816,28 +816,28 @@
           <img src="images/VG_logo_masked.svg" class="header-logo-img header-logo-img--sm" alt="Воробьёвы Горы">
         </div>
         <div class="header-right">
-          <span class="header-lang">RU</span>
+          <button class="lang-btn" onclick="toggleLangDropdown(event)"><img class="lang-current-flag" src="images/flags/ru.svg" alt="Lang"></button>
         </div>
       </header>
 
       <div class="sbp-wrap">
         <div class="sbp-card">
-          <div class="sbp-badge">СБП</div>
-          <h2 class="sbp-title">Отсканируйте QR-код</h2>
-          <p class="sbp-subtitle">Откройте приложение банка и отсканируйте код</p>
+          <div class="sbp-badge" data-i18n="sbp.badge">СБП</div>
+          <h2 class="sbp-title" data-i18n="sbp.title">Отсканируйте QR-код</h2>
+          <p class="sbp-subtitle" data-i18n="sbp.subtitle">Откройте приложение банка и отсканируйте код</p>
           <div class="sbp-qr-wrap">
             <canvas id="sbp-qr-canvas" width="280" height="280"></canvas>
           </div>
-          <p class="sbp-amount">К оплате: <span id="sbp-amount-value">0 ₽</span></p>
+          <p class="sbp-amount"><span data-i18n="sbp.amount">К оплате:</span> <span id="sbp-amount-value">0 ₽</span></p>
           <div class="sbp-timer">
             <i data-lucide="clock" class="sbp-timer-icon"></i>
-            Ожидание оплаты: <span id="sbp-countdown">120</span> сек.
+            <span data-i18n="sbp.waiting">Ожидание оплаты:</span> <span id="sbp-countdown">120</span> <span data-i18n="sbp.sec">сек.</span>
           </div>
         </div>
       </div>
 
       <div class="sbp-bottom">
-        <button class="scan-back-btn" onclick="cancelSBP()">ОТМЕНА</button>
+        <button class="scan-back-btn" onclick="cancelSBP()" data-i18n="common.cancel">ОТМЕНА</button>
       </div>
     </div>
 
@@ -851,23 +851,23 @@
               <path d="M24 40L35 51L56 30" stroke="#2ECC71" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
             </svg>
           </div>
-          <h2 class="success-title">Покупка успешно оплачена</h2>
-          <p class="success-subtitle">Спасибо за покупку!</p>
+          <h2 class="success-title" data-i18n="success.title">Покупка успешно оплачена</h2>
+          <p class="success-subtitle" data-i18n="success.subtitle">Спасибо за покупку!</p>
 
           <div class="success-receipt-divider"></div>
 
           <!-- Вопрос о чеке — внутри карточки -->
           <div class="success-receipt-question" id="success-receipt-question">
-            <p class="success-receipt-title">Нужно отправить чек по электронной почте?</p>
+            <p class="success-receipt-title" data-i18n="success.receipt_question">Нужно отправить чек по электронной почте?</p>
             <div class="success-receipt-buttons" id="success-receipt-buttons">
-              <button class="success-receipt-btn success-receipt-btn--no" onclick="receiptNo()">Спасибо, не нужно</button>
-              <button class="success-receipt-btn success-receipt-btn--yes" onclick="receiptYes()">Да</button>
+              <button class="success-receipt-btn success-receipt-btn--no" onclick="receiptNo()" data-i18n="success.no_thanks">Спасибо, не нужно</button>
+              <button class="success-receipt-btn success-receipt-btn--yes" onclick="receiptYes()" data-i18n="success.yes">Да</button>
             </div>
           </div>
 
           <!-- Форма ввода email (скрыта по умолчанию) -->
           <div class="success-receipt-email" id="success-receipt-email" style="display:none;">
-            <input type="email" class="receipt-email-input" id="receipt-email-input" placeholder="Введите email" readonly>
+            <input type="email" class="receipt-email-input" id="receipt-email-input" placeholder="Введите email" data-i18n-placeholder="success.email_placeholder" readonly>
             <div class="vkb" id="virtual-keyboard">
               <div class="vkb-row">
                 <button class="vkb-key" data-key="1">1</button>
@@ -919,14 +919,14 @@
                 <button class="vkb-key vkb-key--sym" data-key=".">.</button>
                 <button class="vkb-key vkb-key--sym" data-key="-">-</button>
                 <button class="vkb-key vkb-key--sym" data-key="_">_</button>
-                <button class="vkb-key vkb-key--send" onclick="receiptSendEmail()">ОТПРАВИТЬ</button>
+                <button class="vkb-key vkb-key--send" onclick="receiptSendEmail()" data-i18n="success.send">ОТПРАВИТЬ</button>
               </div>
             </div>
-            <button class="success-receipt-back" onclick="receiptBackToButtons()">← Назад</button>
+            <button class="success-receipt-back" onclick="receiptBackToButtons()" data-i18n="success.back">← Назад</button>
           </div>
 
           <div class="success-timer">
-            Автовозврат через <span id="success-countdown">15</span> сек.
+            <span data-i18n="success.auto_return">Автовозврат через</span> <span id="success-countdown">15</span> <span data-i18n="success.sec">сек.</span>
           </div>
         </div>
       </div>
@@ -937,7 +937,7 @@
     <div class="print-loader" id="print-loader">
       <div class="print-loader-content">
         <div class="print-spinner"></div>
-        <p class="print-loader-text">Печать билетов...</p>
+        <p class="print-loader-text" data-i18n="print.printing">Печать билетов...</p>
         <p class="print-loader-count" id="print-loader-count"></p>
       </div>
     </div>
@@ -952,19 +952,28 @@
   <!-- Модалка бездействия -->
   <div class="inactivity-modal" id="inactivity-modal">
     <div class="inactivity-modal-card">
-      <p class="inactivity-modal-text">Через <span id="inactivity-countdown">10</span> секунд экран перейдет в режим ожидания</p>
-      <p class="inactivity-modal-hint">Нажмите на экран, чтобы продолжить</p>
+      <p class="inactivity-modal-text"><span data-i18n="inactivity.before_countdown">Через</span> <span id="inactivity-countdown">10</span> <span data-i18n="inactivity.after_countdown">секунд экран перейдет в режим ожидания</span></p>
+      <p class="inactivity-modal-hint" data-i18n="inactivity.hint">Нажмите на экран, чтобы продолжить</p>
       <div class="inactivity-modal-buttons">
-        <button class="inactivity-btn inactivity-btn--continue" onclick="dismissInactivity()">Продолжить</button>
-        <button class="inactivity-btn inactivity-btn--exit" onclick="goToSplashNow()">На главный экран</button>
+        <button class="inactivity-btn inactivity-btn--continue" onclick="dismissInactivity()" data-i18n="inactivity.continue">Продолжить</button>
+        <button class="inactivity-btn inactivity-btn--exit" onclick="goToSplashNow()" data-i18n="inactivity.to_main">На главный экран</button>
       </div>
     </div>
   </div>
 
 
+  <!-- Language dropdown (global, one instance) -->
+  <div class="lang-dropdown" id="lang-dropdown">
+    <button class="lang-option" onclick="setLanguage('ru')"><img src="images/flags/ru.svg" class="lang-flag" alt=""> Русский</button>
+    <button class="lang-option" onclick="setLanguage('en')"><img src="images/flags/en.svg" class="lang-flag" alt=""> English</button>
+    <button class="lang-option" onclick="setLanguage('ar')"><img src="images/flags/ar.svg" class="lang-flag" alt=""> العربية</button>
+    <button class="lang-option" onclick="setLanguage('zh')"><img src="images/flags/zh.svg" class="lang-flag" alt=""> 中文</button>
+  </div>
+
   <script src="lucide.min.js?v=20260309"></script>
+  <script src="i18n.js?v=20260330"></script>
   <script src="qrcode.min.js?v=20260313"></script>
   <script src="ticket-service.js?v=20260314"></script>
-  <script src="app.js?v=20260314"></script>
+  <script src="app.js?v=20260330"></script>
 </body>
 </html>
