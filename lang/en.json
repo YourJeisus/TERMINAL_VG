@@ -67,6 +67,7 @@
 
   "tickets": {
     "_context": "Ticket purchase screens. Titles/descriptions are loaded from API, these are static fallbacks.",
+    "unavailable": "Tickets are temporarily unavailable",
     "cable_car_desc": "The cable car at Vorobyovy Gory is a unique attraction offering panoramic views of Moscow. The route spans 720 meters over the Moscow River. Cabins feature panoramic glazing.",
     "alpaka_desc": "Alpaca Park is a cozy natural spot with friendly alpacas. Feed the animals, take photos, and relax with the whole family. A perfect place for a walk with children.",
     "museum_desc": "The Museum of Illusions is an interactive space with optical illusions, mirror mazes, and extraordinary installations. Vivid experiences and great photos for the entire family.",

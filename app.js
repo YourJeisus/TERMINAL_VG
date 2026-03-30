@@ -97,23 +97,37 @@ function renderCategories(categories) {
     }
 
     // Render tariffs (filtered by today's day type)
-    if (cat.category_tariffs && cat.category_tariffs.length > 0) {
-      var rowsContainer = screen.querySelector('.tkt-rows');
-      if (!rowsContainer) return;
-      rowsContainer.innerHTML = '';
+    var rowsContainer = screen.querySelector('.tkt-rows');
+    if (!rowsContainer) return;
+    rowsContainer.innerHTML = '';
 
-      var todayType = getTodayDayType();
-      var filteredTariffs = cat.category_tariffs;
-      if (todayType) {
-        filteredTariffs = cat.category_tariffs.filter(function(t) {
-          return t.day_type === todayType;
-        });
-      }
-      // Fallback: if no tariffs match today's type, show all
+    var tariffs = cat.category_tariffs || [];
+    var todayType = getTodayDayType();
+    var filteredTariffs = tariffs;
+    if (todayType && tariffs.length > 0) {
+      filteredTariffs = tariffs.filter(function(t) {
+        return t.day_type === todayType;
+      });
       if (filteredTariffs.length === 0) {
-        filteredTariffs = cat.category_tariffs;
+        filteredTariffs = tariffs;
         console.warn('[API] No tariffs match today day_type "' + todayType + '" for category ' + cat.category_id + ', showing all');
       }
+    }
+
+    if (filteredTariffs.length === 0) {
+      // No tariffs — show unavailable message
+      var msg = document.createElement('div');
+      msg.className = 'tkt-unavailable';
+      msg.setAttribute('data-i18n', 'tickets.unavailable');
+      msg.textContent = t('tickets.unavailable');
+      rowsContainer.appendChild(msg);
+      // Hide pay button
+      var payBtn = screen.querySelector('.tkt-pay-btn');
+      if (payBtn) payBtn.style.display = 'none';
+    } else {
+      // Show pay button
+      var payBtn = screen.querySelector('.tkt-pay-btn');
+      if (payBtn) payBtn.style.display = '';
 
       filteredTariffs.forEach(function(tariff) {
         var row = document.createElement('div');

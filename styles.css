@@ -1341,6 +1341,15 @@ body {
   gap: 16px;
 }
 
+.tkt-unavailable {
+  text-align: center;
+  padding: 48px 24px;
+  color: rgba(255,255,255,0.4);
+  font-family: 'Gotham', 'Inter', sans-serif;
+  font-size: 22px;
+  font-weight: 500;
+}
+
 .tkt-row {
   display: flex;
   align-items: center;
