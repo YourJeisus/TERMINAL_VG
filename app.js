@@ -18,6 +18,49 @@ var CATEGORY_SCREEN_MAP = {
 var loadedCategories = [];
 var dayTypesCalendar = []; // calendar of day types for 100 days ahead
 
+// === Auto-translate API text via MyMemory (free, no key) ===
+var TRANSLATE_LANGMAP = { en: 'ru|en', ar: 'ru|ar', zh: 'ru|zh-CN' };
+
+function translateText(text, targetLang, callback) {
+  if (!text || targetLang === 'ru') { callback(text); return; }
+  var pair = TRANSLATE_LANGMAP[targetLang];
+  if (!pair) { callback(text); return; }
+
+  // Check localStorage cache
+  var cacheKey = 'tr_' + targetLang + '_' + hashCode(text);
+  var cached = localStorage.getItem(cacheKey);
+  if (cached) { callback(cached); return; }
+
+  var url = 'https://api.mymemory.translated.net/get?q=' + encodeURIComponent(text) + '&langpair=' + pair;
+  var xhr = new XMLHttpRequest();
+  xhr.open('GET', url, true);
+  xhr.timeout = 8000;
+  xhr.onload = function() {
+    try {
+      var data = JSON.parse(xhr.responseText);
+      if (data.responseStatus === 200 && data.responseData && data.responseData.translatedText) {
+        var translated = data.responseData.translatedText;
+        localStorage.setItem(cacheKey, translated);
+        callback(translated);
+        return;
+      }
+    } catch (e) { console.error('[Translate] Parse error:', e); }
+    callback(text);
+  };
+  xhr.onerror = function() { callback(text); };
+  xhr.ontimeout = function() { callback(text); };
+  xhr.send();
+}
+
+function hashCode(str) {
+  var h = 0;
+  for (var i = 0; i < str.length; i++) {
+    h = ((h << 5) - h) + str.charCodeAt(i);
+    h |= 0;
+  }
+  return h.toString(36);
+}
+
 // Get today's tariff day_type from the calendar
 function getTodayDayType() {
   var today = new Date();
@@ -153,6 +196,50 @@ function renderCategories(categories) {
   lucide.createIcons();
   // Re-apply translations after dynamic content is rendered
   if (window.i18n) i18n.applyTranslations();
+  // Auto-translate API content (names, descriptions, tariffs) if not Russian
+  translateApiContent(categories);
+}
+
+function translateApiContent(categories) {
+  var lang = window.i18n ? i18n.getCurrentLang() : 'ru';
+  if (lang === 'ru') return;
+
+  categories.forEach(function(cat) {
+    var screenKey = CATEGORY_SCREEN_MAP[cat.category_id];
+    if (!screenKey) return;
+    var screen = document.getElementById('screen-' + screenKey);
+    if (!screen) return;
+
+    // Translate category name
+    var titleEl = screen.querySelector('.tkt-title');
+    if (titleEl && cat.category_name) {
+      translateText(cat.category_name, lang, function(translated) {
+        titleEl.textContent = translated;
+      });
+    }
+
+    // Translate category description
+    var descEl = screen.querySelector('.tkt-description p');
+    if (descEl && cat.category_description) {
+      var plainDesc = cat.category_description.replace(/\r\n/g, '\n').replace(/\r/g, '\n');
+      translateText(plainDesc, lang, function(translated) {
+        var safe = translated
+          .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+          .replace(/\n/g, '<br>');
+        descEl.innerHTML = safe;
+      });
+    }
+
+    // Translate tariff names
+    screen.querySelectorAll('.tkt-row .tkt-pill').forEach(function(pill) {
+      var originalName = pill.textContent.trim();
+      if (originalName) {
+        translateText(originalName, lang, function(translated) {
+          pill.textContent = translated;
+        });
+      }
+    });
+  });
 }
 
 // Populate ticket screen carousels from SCREEN_BANNERS (runs immediately, no API needed)

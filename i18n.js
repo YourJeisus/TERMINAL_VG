@@ -96,6 +96,10 @@
 
     loadLanguage(lang, function() {
       applyTranslations();
+      // Re-translate API content (category names, descriptions, tariffs)
+      if (window.loadedCategories && window.translateApiContent) {
+        translateApiContent(loadedCategories);
+      }
     });
   }
 
