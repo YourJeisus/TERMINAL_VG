@@ -33,7 +33,7 @@
 }
 
 body {
-  font-family: 'Gotham', 'Inter', sans-serif;
+  font-family: 'Inter', sans-serif;
   background: #000;
   color: var(--text-white);
   overflow: hidden;
@@ -170,7 +170,7 @@ body {
   border: none;
   background: transparent;
   color: #fff;
-  font-family: 'Gotham', 'Inter', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 20px;
   font-weight: 500;
   border-radius: 14px;
@@ -235,7 +235,7 @@ body {
 }
 
 .bottom-eskimos-text {
-  font-family: 'Gotham', 'Inter', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-weight: 400;
   color: var(--text-light);
 }
@@ -425,7 +425,7 @@ body {
 }
 
 .splash-eskimos {
-  font-family: 'Gotham', 'Inter', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-weight: 400;
 }
 
@@ -921,7 +921,7 @@ body {
   border: 1px solid var(--border-dark);
   border-radius: 100px;
   padding: 16px 38px;
-  font-family: 'Gotham', 'Inter', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 17px;
   font-weight: 700;
   letter-spacing: 2px;
@@ -951,7 +951,7 @@ body {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  font-family: 'Gotham', 'Inter', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-weight: 700;
   letter-spacing: 2px;
   border: none;
@@ -1021,7 +1021,7 @@ body {
   background: transparent;
   color: var(--text-light);
   border: 1px solid var(--border-dark);
-  font-family: 'Gotham', 'Inter', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 15px;
   font-weight: 500;
   cursor: pointer;
@@ -1099,7 +1099,7 @@ body {
   height: 60px;
   padding: 16px 32px;
   border-radius: 100px;
-  font-family: 'Gotham', 'Inter', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 20px;
   font-weight: 500;
   color: var(--text-light);
@@ -1369,7 +1369,7 @@ body {
   text-align: center;
   padding: 48px 24px;
   color: rgba(255,255,255,0.4);
-  font-family: 'Gotham', 'Inter', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 22px;
   font-weight: 500;
 }
@@ -1419,7 +1419,7 @@ body {
   height: 52px;
   border-radius: 10px;
   border: none;
-  font-family: 'Gotham', 'Inter', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 26px;
   font-weight: 700;
   cursor: pointer;
@@ -1596,7 +1596,7 @@ body {
   justify-content: center;
   background: linear-gradient(to right, #6AAFE6, #5090D0);
   color: #FFFFFF;
-  font-family: 'Gotham', 'Inter', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 26px;
   font-weight: 800;
   letter-spacing: 2px;
@@ -1623,7 +1623,7 @@ body {
   justify-content: center;
   background: rgba(255,255,255,0.08);
   color: #999999;
-  font-family: 'Gotham', 'Inter', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 22px;
   font-weight: 700;
   letter-spacing: 2px;
@@ -1677,7 +1677,7 @@ body {
   height: 60px;
   padding: 0 28px;
   border-radius: 100px;
-  font-family: 'Gotham', 'Inter', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 20px;
   font-weight: 500;
   color: var(--text-light);
@@ -1725,7 +1725,7 @@ body {
   flex: 1;
   height: 100%;
   border-radius: 100px;
-  font-family: 'Gotham', 'Inter', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 22px;
   font-weight: 500;
   color: var(--text-light);
@@ -1797,7 +1797,7 @@ body {
   height: 56px;
   border-radius: 12px;
   border: none;
-  font-family: 'Gotham', 'Inter', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 26px;
   cursor: pointer;
   display: flex;
@@ -1858,7 +1858,7 @@ body {
   justify-content: center;
   background: linear-gradient(135deg, var(--accent) 0%, var(--accent-dark) 100%);
   color: #FFFFFF;
-  font-family: 'Gotham', 'Inter', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 22px;
   font-weight: 900;
   letter-spacing: 3px;
@@ -1885,7 +1885,7 @@ body {
   justify-content: center;
   background: transparent;
   color: var(--text-light);
-  font-family: 'Gotham', 'Inter', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 18px;
   font-weight: 700;
   letter-spacing: 2px;
@@ -2074,7 +2074,7 @@ body {
   align-items: center;
   justify-content: center;
   transition: transform 0.1s;
-  font-family: 'Gotham', 'Inter', sans-serif;
+  font-family: 'Inter', sans-serif;
 }
 
 .success-receipt-btn:active { transform: scale(0.97); }
@@ -2101,7 +2101,7 @@ body {
   background: transparent;
   border: none;
   color: rgba(255,255,255,0.4);
-  font-family: 'Gotham', 'Inter', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 16px;
   font-weight: 500;
   cursor: pointer;
@@ -2118,7 +2118,7 @@ body {
   background: rgba(255,255,255,0.15);
   border: 1.5px solid rgba(255,255,255,0.25);
   color: #FFFFFF;
-  font-family: 'Gotham', 'Inter', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 20px;
   font-weight: 700;
   letter-spacing: 2px;
@@ -2184,13 +2184,13 @@ body {
 
 .payment-loader-text {
   color: rgba(255, 255, 255, 0.75);
-  font-family: 'Gotham', 'Inter', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 18px;
   font-weight: 500;
 }
 
 .payment-loader-amount {
-  font-family: 'Gotham', 'Inter', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 36px;
   font-weight: 700;
   color: #fff;
@@ -2207,7 +2207,7 @@ body {
 
 .pay-status-text {
   color: rgba(255, 255, 255, 0.75);
-  font-family: 'Gotham', 'Inter', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 18px;
   font-weight: 500;
   text-align: center;
@@ -2215,7 +2215,7 @@ body {
 
 .pay-status-hint {
   color: rgba(255, 255, 255, 0.35);
-  font-family: 'Gotham', 'Inter', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 14px;
   font-weight: 400;
   text-align: center;
@@ -2259,7 +2259,7 @@ body {
 
 .inactivity-modal-text {
   color: #fff;
-  font-family: 'Gotham', 'Inter', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 30px;
   font-weight: 500;
   line-height: 1.45;
@@ -2274,7 +2274,7 @@ body {
 
 .inactivity-modal-hint {
   color: rgba(255, 255, 255, 0.4);
-  font-family: 'Gotham', 'Inter', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 20px;
   font-weight: 400;
   margin: 0;
@@ -2292,7 +2292,7 @@ body {
   padding: 26px 20px;
   border-radius: 20px;
   border: none;
-  font-family: 'Gotham', 'Inter', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 22px;
   font-weight: 700;
   cursor: pointer;
@@ -2360,14 +2360,14 @@ body {
 
 .print-loader-text {
   color: #fff;
-  font-family: 'Gotham', 'Inter', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 28px;
   font-weight: 500;
 }
 
 .print-loader-count {
   color: rgba(255, 255, 255, 0.4);
-  font-family: 'Gotham', 'Inter', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 20px;
   font-weight: 400;
 }
@@ -2423,7 +2423,7 @@ body {
   align-items: center;
   justify-content: center;
   transition: transform 0.1s;
-  font-family: 'Gotham', 'Inter', sans-serif;
+  font-family: 'Inter', sans-serif;
 }
 .receipt-btn:active { transform: scale(0.97); }
 
@@ -2468,7 +2468,7 @@ body {
   outline: none;
   margin-bottom: 16px;
   caret-color: #E8456F;
-  font-family: 'Gotham', 'Inter', sans-serif;
+  font-family: 'Inter', sans-serif;
 }
 .receipt-email-input:focus {
   border-color: rgba(255,255,255,0.4);
@@ -2502,7 +2502,7 @@ body {
   align-items: center;
   justify-content: center;
   transition: background 0.1s;
-  font-family: 'Gotham', 'Inter', sans-serif;
+  font-family: 'Inter', sans-serif;
 }
 .vkb-key:active {
   background: rgba(255,255,255,0.3);
@@ -2657,7 +2657,7 @@ body {
   transition: all 0.2s;
   width: 100%;
   text-align: left;
-  font-family: 'Gotham', 'Inter', sans-serif;
+  font-family: 'Inter', sans-serif;
   color: #FFFFFF;
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
@@ -2722,7 +2722,7 @@ body {
   background: rgba(255,255,255,0.15);
   border: 1.5px solid rgba(255,255,255,0.25);
   color: #FFFFFF;
-  font-family: 'Gotham', 'Inter', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 20px;
   font-weight: 700;
   letter-spacing: 2px;
