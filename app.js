@@ -16,6 +16,26 @@ var CATEGORY_SCREEN_MAP = {
 };
 
 var loadedCategories = [];
+var dayTypesCalendar = []; // calendar of day types for 100 days ahead
+
+// Get today's tariff day_type from the calendar
+function getTodayDayType() {
+  var today = new Date();
+  var yyyy = today.getFullYear();
+  var mm = String(today.getMonth() + 1).padStart(2, '0');
+  var dd = String(today.getDate()).padStart(2, '0');
+  var todayStr = yyyy + '-' + mm + '-' + dd;
+
+  for (var i = 0; i < dayTypesCalendar.length; i++) {
+    if (dayTypesCalendar[i].date === todayStr) {
+      var calType = dayTypesCalendar[i].type;
+      // Map calendar type → tariff day_type
+      if (calType === 'working') return 'weekday';
+      return calType; // 'weekend', 'holiday' match as-is
+    }
+  }
+  return null; // not found in calendar
+}
 
 // Banner images per category screen (prefix-based)
 var SCREEN_BANNERS = {
@@ -33,6 +53,11 @@ function loadCategories() {
   xhr.onload = function() {
     try {
       var data = JSON.parse(xhr.responseText);
+      // Save day types calendar (overwrite each time)
+      if (data.day_types_calendar && data.day_types_calendar.length > 0) {
+        dayTypesCalendar = data.day_types_calendar;
+        console.log('[API] Loaded day_types_calendar: ' + dayTypesCalendar.length + ' days, today=' + getTodayDayType());
+      }
       if (data.categories && data.categories.length > 0) {
         loadedCategories = data.categories;
         renderCategories(data.categories);
@@ -66,13 +91,26 @@ function renderCategories(categories) {
     var descEl = screen.querySelector('.tkt-description p');
     if (descEl && cat.category_description) descEl.textContent = cat.category_description;
 
-    // Render tariffs
+    // Render tariffs (filtered by today's day type)
     if (cat.category_tariffs && cat.category_tariffs.length > 0) {
       var rowsContainer = screen.querySelector('.tkt-rows');
       if (!rowsContainer) return;
       rowsContainer.innerHTML = '';
 
-      cat.category_tariffs.forEach(function(tariff) {
+      var todayType = getTodayDayType();
+      var filteredTariffs = cat.category_tariffs;
+      if (todayType) {
+        filteredTariffs = cat.category_tariffs.filter(function(t) {
+          return t.day_type === todayType;
+        });
+      }
+      // Fallback: if no tariffs match today's type, show all
+      if (filteredTariffs.length === 0) {
+        filteredTariffs = cat.category_tariffs;
+        console.warn('[API] No tariffs match today day_type "' + todayType + '" for category ' + cat.category_id + ', showing all');
+      }
+
+      filteredTariffs.forEach(function(tariff) {
         var row = document.createElement('div');
         row.className = 'tkt-row';
         row.dataset.price = tariff.price;
@@ -365,17 +403,6 @@ function initTicketCarousels() {
 }
 populateScreenBanners();
 
-// === Clock ===
-function updateClock() {
-  const now = new Date();
-  const time = now.toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
-  document.querySelectorAll('.bottom-time').forEach(el => el.textContent = time);
-  var currentTimeEl = document.getElementById('current-time');
-  if (currentTimeEl) currentTimeEl.textContent = time;
-}
-
-updateClock();
-setInterval(updateClock, 30000);
 
 // === Weather (Open-Meteo, Воробьёвы горы) ===
 function updateWeather() {
@@ -464,20 +491,24 @@ document.addEventListener('click', function(e) {
   var modal = document.getElementById('inactivity-modal');
   if (modal && modal.classList.contains('active')) {
     if (e.target.closest('.inactivity-btn')) return;
+    e.preventDefault();
+    e.stopImmediatePropagation();
     resetInactivityTimer();
     return;
   }
   resetInactivityTimer();
-});
+}, true);
 document.addEventListener('touchstart', function(e) {
   var modal = document.getElementById('inactivity-modal');
   if (modal && modal.classList.contains('active')) {
     if (e.target.closest('.inactivity-btn')) return;
+    e.preventDefault();
+    e.stopImmediatePropagation();
     resetInactivityTimer();
     return;
   }
   resetInactivityTimer();
-});
+}, true);
 resetInactivityTimer();
 
 // === Payment Processing ===

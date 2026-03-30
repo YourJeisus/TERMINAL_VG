@@ -144,7 +144,14 @@ body {
   font-weight: 400;
 }
 
-.bottom-time {
+.bottom-eskimos-logo {
+  width: 16px;
+  height: 16px;
+  filter: invert(1);
+  opacity: 0.5;
+}
+
+.bottom-eskimos-text {
   font-weight: 500;
   color: var(--text-light);
 }
@@ -1860,13 +1867,13 @@ body {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 32px;
+  gap: 28px;
   width: 100%;
-  max-width: 600px;
-  padding: 72px 48px;
-  border-radius: 32px;
-  background: rgba(255,255,255,0.12);
-  border: 1.5px solid rgba(255,255,255,0.25);
+  max-width: 680px;
+  padding: 64px 64px 56px;
+  border-radius: 36px;
+  background: rgba(20, 20, 22, 0.92);
+  border: 1.5px solid rgba(255,255,255,0.15);
   backdrop-filter: blur(32px);
   -webkit-backdrop-filter: blur(32px);
   box-shadow: 0 8px 60px rgba(0,0,0,0.4);
@@ -1895,22 +1902,22 @@ body {
 }
 
 .success-title {
-  font-size: 34px;
+  font-size: 36px;
   font-weight: 900;
   text-align: center;
 }
 
 .success-subtitle {
-  font-size: 20px;
+  font-size: 22px;
   font-weight: 400;
   color: rgba(255,255,255,0.7);
   text-align: center;
 }
 
 .success-timer {
-  font-size: 17px;
+  font-size: 20px;
   font-weight: 400;
-  color: rgba(255,255,255,0.45);
+  color: rgba(255,255,255,0.4);
   text-align: center;
   margin-top: 16px;
 }
@@ -1936,7 +1943,7 @@ body {
 }
 
 .success-receipt-title {
-  font-size: 20px;
+  font-size: 24px;
   font-weight: 500;
   text-align: center;
   color: rgba(255,255,255,0.7);
@@ -1952,10 +1959,10 @@ body {
 
 .success-receipt-btn {
   width: 100%;
-  padding: 18px 24px;
-  border-radius: 16px;
+  padding: 26px 24px;
+  border-radius: 20px;
   border: none;
-  font-size: 18px;
+  font-size: 22px;
   font-weight: 700;
   cursor: pointer;
   display: flex;
@@ -2132,22 +2139,23 @@ body {
   background: rgba(20, 20, 22, 0.92);
   backdrop-filter: blur(32px);
   -webkit-backdrop-filter: blur(32px);
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  border-radius: 32px;
-  padding: 56px 56px 48px;
-  max-width: 560px;
+  border: 1.5px solid rgba(255, 255, 255, 0.15);
+  border-radius: 36px;
+  padding: 64px 64px 56px;
+  max-width: 680px;
   width: 90%;
   text-align: center;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 20px;
+  gap: 28px;
+  box-shadow: 0 8px 60px rgba(0,0,0,0.4);
 }
 
 .inactivity-modal-text {
   color: #fff;
   font-family: 'Gotham', 'Inter', sans-serif;
-  font-size: 26px;
+  font-size: 30px;
   font-weight: 500;
   line-height: 1.45;
   margin: 0;
@@ -2156,13 +2164,13 @@ body {
 .inactivity-modal-text span {
   font-weight: 900;
   color: #6AAFE6;
-  font-size: 32px;
+  font-size: 38px;
 }
 
 .inactivity-modal-hint {
   color: rgba(255, 255, 255, 0.4);
   font-family: 'Gotham', 'Inter', sans-serif;
-  font-size: 17px;
+  font-size: 20px;
   font-weight: 400;
   margin: 0;
 }
@@ -2171,16 +2179,16 @@ body {
   display: flex;
   gap: 16px;
   width: 100%;
-  margin-top: 12px;
+  margin-top: 16px;
 }
 
 .inactivity-btn {
   flex: 1;
-  padding: 22px 16px;
-  border-radius: 18px;
+  padding: 26px 20px;
+  border-radius: 20px;
   border: none;
   font-family: 'Gotham', 'Inter', sans-serif;
-  font-size: 20px;
+  font-size: 22px;
   font-weight: 700;
   cursor: pointer;
   transition: transform 0.1s;
@@ -2200,45 +2208,16 @@ body {
   border: 1.5px solid rgba(255, 255, 255, 0.15);
 }
 
-/* === Eskimos Footer === */
-.eskimos-footer {
-  position: fixed;
-  bottom: 8px;
-  left: 0;
-  right: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  z-index: 10;
-  pointer-events: none;
-}
-
-.eskimos-footer-logo {
-  width: 20px;
-  height: 20px;
-  filter: invert(1);
-  opacity: 0.3;
-}
-
-.eskimos-footer-text {
-  font-family: 'Gotham', 'Inter', sans-serif;
-  font-size: 10px;
-  font-weight: 400;
-  color: rgba(255, 255, 255, 0.3);
-  letter-spacing: 0.05em;
-}
 
 /* === Print Loader === */
 .print-loader {
   position: fixed;
   inset: 0;
-  z-index: 9999;
-  background: rgba(0, 0, 0, 0.85);
+  background: rgba(0, 0, 0, 0.6);
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 100;
+  z-index: 9999;
   opacity: 0;
   pointer-events: none;
   transition: opacity 0.3s ease;
@@ -2253,35 +2232,38 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 16px;
-  background: rgba(20, 20, 22, 0.85);
-  backdrop-filter: blur(24px);
-  -webkit-backdrop-filter: blur(24px);
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  border-radius: 24px;
-  padding: 40px 48px;
+  gap: 28px;
+  background: rgba(20, 20, 22, 0.92);
+  backdrop-filter: blur(32px);
+  -webkit-backdrop-filter: blur(32px);
+  border: 1.5px solid rgba(255, 255, 255, 0.15);
+  border-radius: 36px;
+  padding: 64px 64px 56px;
+  max-width: 680px;
+  width: 90%;
+  box-shadow: 0 8px 60px rgba(0,0,0,0.4);
 }
 
 .print-spinner {
-  width: 48px;
-  height: 48px;
-  border: 3px solid rgba(255, 255, 255, 0.12);
+  width: 64px;
+  height: 64px;
+  border: 4px solid rgba(255, 255, 255, 0.12);
   border-top-color: #2ECC71;
   border-radius: 50%;
   animation: spin 1s linear infinite;
 }
 
 .print-loader-text {
-  color: rgba(255, 255, 255, 0.75);
+  color: #fff;
   font-family: 'Gotham', 'Inter', sans-serif;
-  font-size: 18px;
+  font-size: 28px;
   font-weight: 500;
 }
 
 .print-loader-count {
   color: rgba(255, 255, 255, 0.4);
   font-family: 'Gotham', 'Inter', sans-serif;
-  font-size: 14px;
+  font-size: 20px;
   font-weight: 400;
 }
 
@@ -2881,8 +2863,8 @@ body {
   .tkt-pay-btn { height: 88px; font-size: 22px; }
   .tkt-back-btn { height: 72px; font-size: 18px; }
   .instructors-grid { grid-template-columns: repeat(2, 1fr); }
-  .success-card { padding: 48px 24px; border-radius: 24px; gap: 24px; }
-  .success-title { font-size: 26px; }
+  .success-card { padding: 48px 32px 40px; border-radius: 32px; gap: 24px; }
+  .success-title { font-size: 28px; }
   .success-subtitle { font-size: 18px; }
   .success-icon-wrap { width: 96px; height: 96px; }
   .success-check { width: 64px; height: 64px; }
