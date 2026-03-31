@@ -972,6 +972,7 @@ function payFree() {
 // Step 3: Complete payment — register in Eskimos, create tickets, print
 var pendingTickets = [];
 var lastPaymentMethod = '';
+var lastPaymentCode = '';
 
 function generatePaymentCode() {
   // UUID v4-like unique payment code
@@ -1052,6 +1053,7 @@ function completePayment(paymentMethod) {
   pendingTickets = [];
 
   var paymentCode = generatePaymentCode();
+  lastPaymentCode = paymentCode;
 
   showPrintLoader();
 
@@ -1141,7 +1143,21 @@ function receiptSendEmail() {
     showAlert(t('alerts.invalid_email'));
     return;
   }
-  console.log('[EMAIL RECEIPT] ' + email, pendingTickets.map(function(t) { return t.number; }));
+
+  // Send receipt via Eskimos API
+  var xhr = new XMLHttpRequest();
+  xhr.open('POST', LOCAL_SERVER + '/api/tickets/email', true);
+  xhr.setRequestHeader('Content-Type', 'application/json');
+  xhr.timeout = 10000;
+  xhr.onload = function() {
+    console.log('[EMAIL] Sent to ' + email + ', payment_code=' + lastPaymentCode);
+  };
+  xhr.onerror = function() { console.error('[EMAIL] Network error'); };
+  xhr.send(JSON.stringify({
+    terminal_payment_code: lastPaymentCode,
+    payers_email: email
+  }));
+
   showAlert(t('alerts.receipt_sent', { email: email }));
   goToMainFromSuccess();
 }

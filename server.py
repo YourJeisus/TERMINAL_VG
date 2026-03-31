@@ -132,6 +132,8 @@ class TerminalHandler(http.server.SimpleHTTPRequestHandler):
             self._handle_api_proxy()
         elif self.path == '/api/tickets/create':
             self._handle_tickets_proxy()
+        elif self.path == '/api/tickets/email':
+            self._handle_email_proxy()
         else:
             self.send_error(404)
 
@@ -257,6 +259,44 @@ class TerminalHandler(http.server.SimpleHTTPRequestHandler):
                 'message': str(e)
             }).encode())
             print(f"[TICKETS] Error: {e}")
+
+    def _handle_email_proxy(self):
+        """Proxy POST to Eskimos email receipt API — injects terminal_code from .env."""
+        import urllib.request
+        try:
+            length = int(self.headers.get('Content-Length', 0))
+            body = self.rfile.read(length)
+            data = json.loads(body) if body else {}
+
+            data['terminal_code'] = TERMINAL_CODE
+
+            payload = json.dumps(data).encode()
+
+            api_url = 'https://vgsport-admin.eskimos.ski/api/v1/tickets/terminal/email'
+            req = urllib.request.Request(
+                api_url,
+                data=payload,
+                headers={'Content-Type': 'application/json'},
+                method='POST'
+            )
+            with urllib.request.urlopen(req, timeout=10) as resp:
+                resp_body = resp.read()
+
+            self.send_response(200)
+            self.send_header('Content-Type', 'application/json')
+            self.end_headers()
+            self.wfile.write(resp_body)
+            print(f"[EMAIL] Sent OK, {len(resp_body)} bytes")
+
+        except Exception as e:
+            self.send_response(502)
+            self.send_header('Content-Type', 'application/json')
+            self.end_headers()
+            self.wfile.write(json.dumps({
+                'error': True,
+                'message': str(e)
+            }).encode())
+            print(f"[EMAIL] Error: {e}")
 
     def do_GET(self):
         if self.path == '/printer-status':
