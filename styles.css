@@ -763,6 +763,26 @@ body {
   line-height: 1.3;
 }
 
+/* === Easter Egg === */
+.easter-egg {
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%) translateY(100%);
+  z-index: 50;
+  pointer-events: none;
+  transition: transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.easter-egg.visible {
+  transform: translateX(-50%) translateY(0);
+}
+.easter-egg-img {
+  width: 200px;
+  height: auto;
+  display: block;
+  filter: drop-shadow(0 -4px 20px rgba(255,0,0,0.3));
+}
+
 /* === Info Cards (fixed to bottom) === */
 .info-cards-fixed {
   display: flex;

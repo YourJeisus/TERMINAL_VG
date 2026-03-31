@@ -531,6 +531,29 @@ function initTicketCarousels() {
 populateScreenBanners();
 
 
+// === Easter egg (5 taps on weather card) ===
+(function() {
+  var taps = 0;
+  var tapTimer = null;
+  var weatherCard = document.getElementById('weather-temp');
+  if (!weatherCard) return;
+  var card = weatherCard.closest('.info-card');
+  if (!card) return;
+  card.addEventListener('click', function(e) {
+    e.stopPropagation();
+    taps++;
+    clearTimeout(tapTimer);
+    tapTimer = setTimeout(function() { taps = 0; }, 2000);
+    if (taps >= 5) {
+      taps = 0;
+      var egg = document.getElementById('easter-egg');
+      if (!egg || egg.classList.contains('visible')) return;
+      egg.classList.add('visible');
+      setTimeout(function() { egg.classList.remove('visible'); }, 5000);
+    }
+  });
+})();
+
 // === Date & time display (localized) ===
 var DATE_LOCALES = { ru: 'ru-RU', en: 'en-US', ar: 'ar-SA', zh: 'zh-CN' };
 function updateDateTime() {
