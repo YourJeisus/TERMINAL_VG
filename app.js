@@ -669,27 +669,33 @@ function goToSplashNow() {
   navigateTo('splash');
 }
 
-document.addEventListener('click', function(e) {
+var _inactivityJustDismissed = false;
+function handleInactivityDismiss(e) {
   var modal = document.getElementById('inactivity-modal');
   if (modal && modal.classList.contains('active')) {
     if (e.target.closest('.inactivity-btn')) return;
     e.preventDefault();
     e.stopImmediatePropagation();
+    _inactivityJustDismissed = true;
     resetInactivityTimer();
+    setTimeout(function() { _inactivityJustDismissed = false; }, 400);
     return;
   }
-  resetInactivityTimer();
-}, true);
-document.addEventListener('touchstart', function(e) {
-  var modal = document.getElementById('inactivity-modal');
-  if (modal && modal.classList.contains('active')) {
-    if (e.target.closest('.inactivity-btn')) return;
+  // Block any click that happens right after modal dismiss
+  if (_inactivityJustDismissed) {
     e.preventDefault();
     e.stopImmediatePropagation();
-    resetInactivityTimer();
     return;
   }
   resetInactivityTimer();
+}
+document.addEventListener('click', handleInactivityDismiss, true);
+document.addEventListener('touchstart', handleInactivityDismiss, true);
+document.addEventListener('touchend', function(e) {
+  if (_inactivityJustDismissed) {
+    e.preventDefault();
+    e.stopImmediatePropagation();
+  }
 }, true);
 resetInactivityTimer();
 
