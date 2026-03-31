@@ -582,6 +582,8 @@ function updateWeather() {
       var sign = temp > 0 ? '+' : '';
       var el = document.getElementById('weather-temp');
       if (el) el.textContent = sign + temp + '°C';
+      var splashEl = document.getElementById('splash-weather-temp');
+      if (splashEl) splashEl.textContent = sign + temp + '°C';
     } catch (e) { console.error('[WEATHER] Parse error:', e); }
   };
   xhr.onerror = function() { console.error('[WEATHER] Network error'); };
