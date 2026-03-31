@@ -188,7 +188,6 @@ function renderCategories(categories) {
   // Re-apply translations after dynamic content is rendered
   if (window.i18n) {
     i18n.applyTranslations();
-    translateApiContent(categories);
   }
 }
 
