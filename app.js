@@ -278,6 +278,21 @@ function populateScreenBanners() {
 // Load categories on startup (banners populated later after all code is defined)
 loadCategories();
 
+// Schedule daily reload at 23:55 (update ticket types for next day)
+(function scheduleDailyReload() {
+  var now = new Date();
+  var target = new Date(now);
+  target.setHours(23, 55, 0, 0);
+  if (now >= target) target.setDate(target.getDate() + 1);
+  var delay = target - now;
+  setTimeout(function() {
+    console.log('[API] Daily reload at 23:55');
+    loadCategories();
+    scheduleDailyReload();
+  }, delay);
+  console.log('[API] Next daily reload in ' + Math.round(delay / 60000) + ' min');
+})();
+
 // === Navigation ===
 const screenMap = {
   'splash': 'screen-splash',
