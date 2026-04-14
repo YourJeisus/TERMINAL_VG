@@ -26,7 +26,6 @@ python print_message.py
 
 - `preview_message.bat` — собрать и открыть превью
 - `print_message.bat` — сразу отправить на принтер
-- `rollback_local.bat` — удалить эту временную папку после печати
 
 ## Если уже поднят локальный сервер проекта
 
