@@ -2138,15 +2138,15 @@ body {
 .success-receipt-btn:active { transform: scale(0.97); }
 
 .success-receipt-btn--yes {
-  background: linear-gradient(135deg, #D42D5A, #B82550);
-  color: #fff;
-  box-shadow: 0 4px 16px rgba(212,45,90,0.3);
-}
-
-.success-receipt-btn--no {
   background: rgba(255,255,255,0.08);
   color: rgba(255,255,255,0.7);
   border: 1.5px solid rgba(255,255,255,0.15);
+}
+
+.success-receipt-btn--no {
+  background: linear-gradient(135deg, #D42D5A, #B82550);
+  color: #fff;
+  box-shadow: 0 4px 16px rgba(212,45,90,0.3);
 }
 
 .success-receipt-email {
